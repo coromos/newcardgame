@@ -46,6 +46,7 @@ MonoBehaviour:
   - Alive3
   - Alive4
   - ApplyCardEffectRPC
+  - CreateCardRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

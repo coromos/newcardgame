@@ -17,7 +17,7 @@ public class DeckEditManager : MonoBehaviour
 
     void SetDeckEditPanel()
     {
-        CreateCard(1, deckCardTrans1);
+        //CreateCard(1, deckCardTrans1);
     }
 
     // カードを生成するメソッド
@@ -25,6 +25,6 @@ public class DeckEditManager : MonoBehaviour
     {
         // cardPrefabをopenedCardTransに生成する
         CardController card = Instantiate(cardPrefab, trans);
-        card.Init(cardId, true);
+        card.Init(cardId, true, (uint)1);
     }
 }

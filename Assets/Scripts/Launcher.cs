@@ -1,6 +1,8 @@
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
+using System.Collections;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class Launcher : MonoBehaviourPunCallbacks
 {
@@ -16,7 +18,10 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
-        PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = 1 }); // “ü‚ê‚È‚¯‚ê‚ÎV‹Kì¬
+        RoomOptions roomOptions = new RoomOptions();
+        roomOptions.MaxPlayers = 1; // Å‘ål”‚ğ1‚Éİ’è
+        roomOptions.CustomRoomProperties = new Hashtable() { ["cardInsID"]=(uint)1 };
+        PhotonNetwork.CreateRoom(null, roomOptions); // “ü‚ê‚È‚¯‚ê‚ÎV‹Kì¬
     }
 
     public override void OnJoinedRoom()

@@ -5,13 +5,20 @@ using UnityEngine.UI;
 using System;
 using System.Linq;
 using Photon.Pun;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
+
+public enum PlaceList
+{
+    Field,
+    Hand
+}
 
 
 public partial class GameManager : MonoBehaviourPun
 {
     [SerializeField] UIManager uIManager;
     [SerializeField] CardController cardPrefab;
-    [SerializeField] Transform playerHand, playerField, enemyField, targetField;
+    [SerializeField] Transform playerHand, enemyHand, playerField, enemyField, targetField;
     [SerializeField] Text playerLeaderHPText, enemyLeaderHPText;
     [SerializeField] Text playerManaPointText;
     [SerializeField] Text playerDefaultManaPointText;
@@ -63,20 +70,41 @@ public partial class GameManager : MonoBehaviourPun
         StartCoroutine(TurnCalc());
     }
 
-    // 指定した場所にカードを生成する
-    void CreateCard(int cardID, Transform place)
+    void CreateCard(int cardID, bool myCard, PlaceList place)
     {
-        CardController card = Instantiate(cardPrefab, place);
-        
-        // 敵フィールドの場合は敵カードとして初期化
-        if (place == enemyField)
+        uint cardIns = 0;
+        Hashtable prHash;
+        prHash = PhotonNetwork.CurrentRoom.CustomProperties;
+        cardIns = (uint)prHash["cardInsID"];
+        photonView.RPC("CreateCardRPC", RpcTarget.AllViaServer, cardID, myCard, PhotonNetwork.LocalPlayer.ActorNumber, cardIns, place.ToString());
+
+        prHash["cardInsID"] = cardIns + 1;
+        PhotonNetwork.CurrentRoom.SetCustomProperties(prHash);
+}
+    // 指定した場所にカードを生成する
+    [PunRPC]
+    void CreateCardRPC(int cardID, bool tmpmyCard, int plNum, uint cardIns, string placeName)
+    {
+        bool myCard = (plNum == PhotonNetwork.LocalPlayer.ActorNumber) ^ tmpmyCard;
+        Transform parentTransform;
+
+        // 自分のカードか敵のカードかと、配置場所に応じて親Transformを決定
+        if (placeName == PlaceList.Hand.ToString())
         {
-            card.Init(cardID, false);
+            parentTransform = myCard ? playerHand : enemyHand;
+        }
+        else if (placeName == PlaceList.Field.ToString())
+        {
+            parentTransform = myCard ? playerField : enemyField;
         }
         else
         {
-            card.Init(cardID, true);
+            Debug.LogError("Invalid place name");
+            return;
         }
+        // カードを生成して親Transformの子に設定
+        CardController newCard = Instantiate(cardPrefab, parentTransform);
+        newCard.Init(cardID, myCard, cardIns);
     }
 
     // 手札にカードを1枚引く
@@ -96,7 +124,7 @@ public partial class GameManager : MonoBehaviourPun
         deck.RemoveAt(0);
         if (playerHandCardList.Length < 9)
         {
-            CreateCard(cardID, hand);
+            CreateCard(cardID, true, PlaceList.Hand);
         }
 
         // 使用可能パネルの更新
@@ -169,7 +197,7 @@ public partial class GameManager : MonoBehaviourPun
             enemy_deck.RemoveAt(0);
             if (enemyFieldCardList.Length < 5)
             {
-                CreateCard(cardID, enemyField);
+                CreateCard(cardID, false, PlaceList.Field);
             }
         }
 

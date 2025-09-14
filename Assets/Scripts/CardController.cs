@@ -18,9 +18,9 @@ public class CardController : MonoBehaviourPun
     }
 
     // カードの初期化（データと見た目のセットアップ）
-    public void Init(int cardID, bool playerCard) 
+    public void Init(int cardID, bool playerCard, uint cardIns) 
     {
-        model = new CardModel(cardID, playerCard);
+        model = new CardModel(cardID, playerCard, cardIns);
         view.Show(model);
     }
 
