@@ -18,7 +18,7 @@ public class DropPlace : MonoBehaviour, IDropHandler
             // カードの親Transformを更新（フィールドに配置）
             card.movement.cardParent = this.transform;
             // カード効果を発動
-            GameManager.instance.UseCardEffect(card, CardEffectType.Alive);
+            GameManager.instance.UseCardEffect(card, card, CardEffectType.Alive);
         }
     }
 }

@@ -47,6 +47,9 @@ MonoBehaviour:
   - Alive4
   - ApplyCardEffectRPC
   - CreateCardRPC
+  - SetPlacePRC
+  - ChangeTurnPRC
+  - CardBattleRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

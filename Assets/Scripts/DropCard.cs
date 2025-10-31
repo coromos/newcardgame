@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 // Graceカードをフィールドにドロップした際の処理を管理するクラス
-public class UseGrace : MonoBehaviour, IDropHandler
+public class DropCard : MonoBehaviour, IDropHandler
 {
     // カードがドロップされた時に呼ばれる
     public void OnDrop(PointerEventData eventData)
@@ -15,13 +15,9 @@ public class UseGrace : MonoBehaviour, IDropHandler
         // 使用可能なカードか判定
         if (card != null && card.model.canUse)
         {
-            Debug.Log("Use Grace");
-            // Graceカードの効果を発動
-            card.UseGrace();
-            // カードを破棄
-            card.DestroyCard();
-            // UIパネルを非表示
+            Debug.Log("Use Card");
             UIManager.instance.SetUseGracePanel(false);
+            GameManager.instance.UseCardFromHand(card);
         }
     }
 }

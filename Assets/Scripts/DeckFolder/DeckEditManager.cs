@@ -25,6 +25,6 @@ public class DeckEditManager : MonoBehaviour
     {
         // cardPrefab‚ğopenedCardTrans‚É¶¬‚·‚é
         CardController card = Instantiate(cardPrefab, trans);
-        card.Init(cardId, true, (uint)1);
+        card.Init(cardId, true, (int)1);
     }
 }

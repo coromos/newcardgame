@@ -9,6 +9,8 @@ public class CardController : MonoBehaviourPun
     public CardView view; // カードの見た目を管理
     public CardModel model; // カードのデータを管理
     public CardMovement movement;  // カードの移動・ドラッグ操作を管理
+    public List<string> addEffectList = new List<string>(); // 追加のカード効果を収めるリスト
+    public int cardInsID;
 
     // コンポーネントの初期化
     private void Awake()
@@ -18,9 +20,10 @@ public class CardController : MonoBehaviourPun
     }
 
     // カードの初期化（データと見た目のセットアップ）
-    public void Init(int cardID, bool playerCard, uint cardIns) 
+    public void Init(int cardID, bool playerCard, int cardIns) 
     {
-        model = new CardModel(cardID, playerCard, cardIns);
+        cardInsID = cardIns;
+        model = new CardModel(cardID, playerCard);
         view.Show(model);
     }
 
@@ -34,7 +37,9 @@ public class CardController : MonoBehaviourPun
     // カードを破棄する
     public void DestroyCard()
     {
-        Destroy(this.gameObject);
+        cardInsID = 0;
+        Transform setplace = GameManager.instance.GetComponent<Transform>();
+        transform.SetParent(setplace, false);
     }
 
     // ダメージが耐久値を超えた場合にカードを破棄する
@@ -49,7 +54,6 @@ public class CardController : MonoBehaviourPun
     // カードをフィールドに配置した時の処理
     public void DropField()
     {
-        GameManager.instance.ReduceManaPoint(model.cost);
         model.onField = true;
         model.canUse = false;
         view.SetCanUsePanel(model.canUse);
@@ -58,6 +62,6 @@ public class CardController : MonoBehaviourPun
     // Graceカードの使用処理
     public void UseGrace()
     {
-        GameManager.instance.ReduceManaPoint(model.cost);
+        DestroyCard();
     }
 }

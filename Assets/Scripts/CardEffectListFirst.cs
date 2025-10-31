@@ -8,6 +8,7 @@ public enum CardEffectType
     Attack,
     Battle,
     Devote,
+    Grace,
     AnyAlive,
     AnyTrash,
     AnyAttack,
@@ -29,9 +30,15 @@ public partial class GameManager : MonoBehaviourPun
     }
 
     [PunRPC]
-    public void Alive1(CardController card, CardController targetCard, PhotonMessageInfo info)
+    public void Alive1(CardController SourceCard, CardController targetCard, CardController refCard)
     {
         DrawCard(playerHand);
+    }
+
+    public void Grace4(CardController SourceCard, CardController targetCard, CardController refCard)
+    {
+        DrawCard(playerHand);
+        Debug.Log("Use Crace4!");
     }
 
 }

@@ -19,7 +19,8 @@ public class CardModel
     public Sprite icon;
 
     public string CardType;
-    public uint cardInsID;
+    public int SelfTypeSet;
+    public int AnyTypeSet;
 
     // 状態管理
     public bool canUse = false;
@@ -38,12 +39,11 @@ public class CardModel
     public int Poison = 0;
 
     // コンストラクタ：ScriptableObjectからデータを取得
-    public CardModel(int cardID, bool playerCard, uint cardIns)
+    public CardModel(int cardID, bool playerCard)
     {
         CardEntity cardEntity = Resources.Load<CardEntity>("CardEntityList/Card" + cardID);
 
         cardId = cardEntity.cardId;
-        cardInsID = cardIns;
 
         cardCategory = cardEntity.cardCategory;
         cardAttribute = cardEntity.cardAttribute;

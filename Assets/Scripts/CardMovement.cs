@@ -45,11 +45,8 @@ public class CardMovement : MonoBehaviour, IDragHandler, IBeginDragHandler, IEnd
         transform.SetParent(cardParent.parent, false);
         GetComponent<CanvasGroup>().blocksRaycasts = false;
 
-        // Graceカードの場合は専用パネルを表示
-        if (card.model.cardCategory == CardCategory.Grace)
-        {
+        if (!card.model.onField)
             UIManager.instance.SetUseGracePanel(true);
-        }
     }
 
     // ドラッグ中の処理（カードをマウス位置に追従させる）
@@ -75,11 +72,7 @@ public class CardMovement : MonoBehaviour, IDragHandler, IBeginDragHandler, IEnd
         transform.SetParent(cardParent, false);
         GetComponent<CanvasGroup>().blocksRaycasts = true;
 
-        // Graceカードの場合は専用パネルを非表示
-        if (card.model.cardCategory == CardCategory.Grace)
-        {
-            UIManager.instance.SetUseGracePanel(false);
-        }
+        UIManager.instance.SetUseGracePanel(false);
     }
 
     // 攻撃アニメーション（カードが攻撃対象に移動して戻る演出）

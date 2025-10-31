@@ -621,6 +621,7 @@ GameObject:
   - component: {fileID: 644335259983375635}
   - component: {fileID: 8449922025538972976}
   - component: {fileID: 7773716938459335055}
+  - component: {fileID: 8681991193909780643}
   m_Layer: 5
   m_Name: Card
   m_TagString: Untagged
@@ -703,6 +704,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   view: {fileID: 0}
   movement: {fileID: 0}
+  addEffectList: []
 --- !u!114 &644335259983375635
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -781,6 +783,28 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &8681991193909780643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8274210558045909516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &8609646140698172439
 GameObject:
   m_ObjectHideFlags: 0

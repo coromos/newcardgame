@@ -20,7 +20,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = 1; // Å‘ål”‚ğ1‚Éİ’è
-        roomOptions.CustomRoomProperties = new Hashtable() { ["cardInsID"]=(uint)1 };
+        roomOptions.CustomRoomProperties = new Hashtable() { ["cardInsID"]=(int)1 };
         PhotonNetwork.CreateRoom(null, roomOptions); // “ü‚ê‚È‚¯‚ê‚ÎV‹Kì¬
     }
 
