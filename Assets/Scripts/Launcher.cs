@@ -19,8 +19,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
         RoomOptions roomOptions = new RoomOptions();
-        roomOptions.MaxPlayers = 1; // Å‘ål”‚ğ1‚Éİ’è
-        roomOptions.CustomRoomProperties = new Hashtable() { ["cardInsID"]=(int)1 };
+        roomOptions.MaxPlayers = 2; // Å‘ål”‚ğ1‚Éİ’è
         PhotonNetwork.CreateRoom(null, roomOptions); // “ü‚ê‚È‚¯‚ê‚ÎV‹Kì¬
     }
 
