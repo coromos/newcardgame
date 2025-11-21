@@ -54,9 +54,71 @@ public partial class GameManager : MonoBehaviourPun
         yield return new WaitForSeconds(time);
     }
 
-    // ゲーム開始時の初期処理
+    // シーンへ移動してきた後、他プレイヤーのシーン読み込み完了を待ってからゲーム開始する
+    bool gameStarted = false;
+    const string LoadedScenePropKey = "LoadedGameScene";
+
     void Start()
     {
+        StartCoroutine(WaitForAllPlayersAndStart());
+    }
+
+    IEnumerator WaitForAllPlayersAndStart()
+    {
+        // まずルームに入るのを待つ
+        while (!PhotonNetwork.InRoom)
+        {
+            yield return null;
+        }
+
+        // 自分がこのゲームシーンへ来たことをプロパティで知らせる
+        Hashtable myProps = new Hashtable();
+        myProps[LoadedScenePropKey] = true;
+        PhotonNetwork.LocalPlayer.SetCustomProperties(myProps);
+
+        // マスタークライアントは全員のプロパティを監視し、全員が読み込み完了したらゲーム開始を通知する
+        if (PhotonNetwork.IsMasterClient)
+        {
+            // 全員が読み込み済みになるまで待機
+            while (!AllPlayersLoaded())
+            {
+                yield return new WaitForSeconds(0.1f);
+            }
+
+            // すべて揃ったので全員に StartGame を呼ばせる
+            photonView.RPC("RPC_StartGame", RpcTarget.All);
+        }
+        else
+        {
+            // 非マスターはマスターが送る RPC_StartGame を待つだけ
+            // （OnPlayerPropertiesUpdate によりマスターの判断が早まる）
+        }
+    }
+
+    // 全プレイヤーがシーン読み込み完了フラグを持っているか
+    bool AllPlayersLoaded()
+    {
+        foreach (var p in PhotonNetwork.PlayerList)
+        {
+            if (!p.CustomProperties.ContainsKey(LoadedScenePropKey))
+            {
+                return false;
+            }
+            object val = p.CustomProperties[LoadedScenePropKey];
+            if (!(val is bool) || !(bool)val)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // マスターが全員揃ったと判断したら呼ぶ RPC
+    [PunRPC]
+    void RPC_StartGame(PhotonMessageInfo info)
+    {
+        if (gameStarted) return;
+        gameStarted = true;
         StartGame();
     }
 
