@@ -126,10 +126,13 @@ public partial class GameManager : MonoBehaviourPun
     {
         //10ミリ秒ごとに更新
         StartCoroutine(waitFew(0.01f));
-        ShowSeed();
-        if (isPlayerTurn)
+        if (gameStarted)
         {
-            SetCanUsePanelHand();
+            ShowSeed();
+            if (isPlayerTurn)
+            {
+                SetCanUsePanelHand();
+            }
         }
     }
 
