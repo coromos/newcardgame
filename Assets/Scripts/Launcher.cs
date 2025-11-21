@@ -18,6 +18,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
+        Debug.Log("空きルームがないため、新規ルームを作成します。");
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = 2; // 最大人数を1に設定
         PhotonNetwork.CreateRoom(null, roomOptions); // 入れなければ新規作成
