@@ -16,10 +16,11 @@ MonoBehaviour:
   name: Gunner
   cardCategory: 0
   cardAttribute: 0
+  cardStains: 
   cost: 1
   toughness: 5
   power: 2
   devote: 2
   icon: {fileID: 21300000, guid: a32eb60562a87cc41b5a9248cf83bf8b, type: 3}
-  SelfTypeSet: 0
-  AnyTypeSet: 
+  earlier: 0
+  interference: 0

@@ -18,3 +18,12 @@ public enum CardAttribute
     Bacillus,
     Nameless
 }
+
+public enum CardStain
+{
+    None,
+    Insect,
+    Dinosaur,
+    Devil,
+
+}

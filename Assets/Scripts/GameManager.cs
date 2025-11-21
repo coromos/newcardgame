@@ -22,17 +22,20 @@ public partial class GameManager : MonoBehaviourPun
     [SerializeField] CardController cardPrefab;
     [SerializeField] Transform playerHand, enemyHand, playerField, enemyField, targetField, playerDeck, enemyDeck;
     [SerializeField] Text playerLeaderHPText, enemyLeaderHPText;
-    [SerializeField] Text playerManaPointText;
-    [SerializeField] Text playerDefaultManaPointText;
+    [SerializeField] Text playerSeedsText, enemySeedsText;
+    [SerializeField] Text playerTreeText, enemyTreeText;
 
     public bool isPlayerTurn = false; //
     List<int> deck = new List<int>() { 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3 };  //
     List<int> enemy_deck = new List<int>() { 1,1,1,1,1,1,1,1, 2,2,2,2,2,2,2,3,3,3,3,3 };  //
 
     public int playerLeaderHP;
+    public int playerSeeds;
+    public int playerTree;
+
     public int enemyLeaderHP;
-    public int playerManaPoint;
-    public int playerDefaultManaPoint;
+    public int enemySeeds;
+    public int enemyTree;
     public int cardInsID = 0;
 
 
@@ -46,10 +49,26 @@ public partial class GameManager : MonoBehaviourPun
         }
     }
 
+    IEnumerator waitFew(float time)
+    {
+        yield return new WaitForSeconds(time);
+    }
+
     // ゲーム開始時の初期処理
     void Start()
     {
         StartGame();
+    }
+
+    void Update()
+    {
+        //10ミリ秒ごとに更新
+        StartCoroutine(waitFew(0.01f));
+        ShowSeed();
+        if (isPlayerTurn)
+        {
+            SetCanUsePanelHand();
+        }
     }
 
     // ゲームの初期化処理
@@ -58,6 +77,7 @@ public partial class GameManager : MonoBehaviourPun
         //オーナーなら、cardInsIDを0から、オーナー以外ならintの最低値から始める
         if (PhotonNetwork.IsMasterClient)
         {
+            isPlayerTurn = true;
             cardInsID = 1;
         }
         else
@@ -74,9 +94,8 @@ public partial class GameManager : MonoBehaviourPun
             CreateCard(deck[i], true, PlaceList.Deck);
         }
 
-        playerManaPoint = 0;
-        playerDefaultManaPoint = 4;
-        ShowManaPoint();
+        playerSeeds = 0;
+        playerTree = 4;
 
         // 初期手札の配布
         SetStartHand();
@@ -100,7 +119,7 @@ public partial class GameManager : MonoBehaviourPun
 
         // 待機中カードがあればそれを使用する
         CardController[] setCardList = GetComponentsInChildren<CardController>();
-        if (setCardList != null)
+        if (setCardList != null && setCardList.Length > 0)
         {
             setCardList[0].transform.SetParent(parentTransform, false);
             setCardList[0].Init(cardID, myCard, cardIns);
@@ -114,27 +133,47 @@ public partial class GameManager : MonoBehaviourPun
         
     }
 
-    // 手札にカードを1枚引く
-    void DrawCard(Transform hand)
+    // DrawCardを全員に通知
+    void CallDrawCard(bool mine)
     {
-        CardController[] playerHandCardList = playerHand.GetComponentsInChildren<CardController>();
+        photonView.RPC("CallDrawCardRPC", RpcTarget.All, mine);
+    }
 
-        
-        CardController[] playerDeckCardList = playerDeck.GetComponentsInChildren<CardController>();
-        if (playerDeckCardList!=null)
+    [PunRPC]
+    void CallDrawCardRPC(bool tmpmine, PhotonMessageInfo info)
+    {
+        bool mine = (PhotonNetwork.LocalPlayer.ActorNumber != info.Sender.ActorNumber) ^ tmpmine;
+        DrawCard(mine);
+    }
+
+    // 手札にカードを1枚引く
+    void DrawCard(bool mine)
+    {
+        CardController[] handCardList;
+        CardController[] deckCardList;
+        if (mine)
+        {
+            handCardList = playerHand.GetComponentsInChildren<CardController>();
+            
+            deckCardList = playerDeck.GetComponentsInChildren<CardController>();
+        }
+        else
+        {
+            handCardList = enemyHand.GetComponentsInChildren<CardController>();
+
+            deckCardList = enemyDeck.GetComponentsInChildren<CardController>();
+        }
+        if (deckCardList != null)
         {
             PlaceList place = PlaceList.Trash;
             // 手札が9枚未満ならカードを追加
-            if (playerHandCardList.Length < 9)
+            if (handCardList.Length < 9)
             {
                 place = PlaceList.Hand;
             }
-            
-            SetPlace(playerDeckCardList[0], place);
-        }
 
-        // 使用可能パネルの更新
-        SetCanUsePanelHand();
+            deckCardList[0].transform.SetParent(GetPlace(mine, place.ToString()), false);
+        }
     }
 
     // ゲーム開始時に手札を3枚配る
@@ -142,7 +181,7 @@ public partial class GameManager : MonoBehaviourPun
     {
         for (int i = 0; i < 3; i++)
         {
-            DrawCard(playerHand);
+            CallDrawCard(playerHand);
         }
     }
 
@@ -156,7 +195,7 @@ public partial class GameManager : MonoBehaviourPun
         }
         else
         {
-            StartCoroutine(EnemyTurn());
+            //StartCoroutine(EnemyTurn());
         }
     }
 
@@ -166,16 +205,31 @@ public partial class GameManager : MonoBehaviourPun
         //turn end script Want!!!!
 
         photonView.RPC("ChangeTurnRPC", RpcTarget.All, true);
-        isPlayerTurn = false;
     }
 
     [PunRPC]
-    public void ChangeTurnPRC(bool isturn, PhotonMessageInfo info)
+    public void ChangeTurnRPC(bool isturn, PhotonMessageInfo info)
     {
         if (PhotonNetwork.LocalPlayer.ActorNumber != info.Sender.ActorNumber)
         {
             isPlayerTurn = true;
             StartCoroutine(TurnCalc());  // ターン処理を再開
+        }
+        else
+        {
+            isPlayerTurn = false;
+            CardController[] playerCardList = playerHand.GetComponentsInChildren<CardController>();
+            foreach (CardController card in playerCardList)
+            {
+                card.model.canUse = false;
+                card.view.SetCanUsePanel(card.model.canUse);
+            }
+            playerCardList = playerField.GetComponentsInChildren<CardController>();
+            foreach (CardController card in playerCardList)
+            {
+                card.model.canUse = false;
+                card.view.SetCanUsePanel(card.model.canUse);
+            }
         }
     }
 
@@ -187,12 +241,8 @@ public partial class GameManager : MonoBehaviourPun
         CardController[] playerFieldCardList = playerField.GetComponentsInChildren<CardController>();
         SetAttackableFieldCard(playerFieldCardList, true);
 
-        // マナポイントを加算
-        playerManaPoint += playerDefaultManaPoint;
-        ShowManaPoint();
-
-        // 手札を1枚引く
-        DrawCard(playerHand);
+        // シードを加算
+        playerSeeds += playerTree;
     }
 
     // 敵のターン処理
@@ -255,6 +305,77 @@ public partial class GameManager : MonoBehaviourPun
         ChangeTurn();
     }
 
+    public int drawBottonFlag = 0;
+
+    public void DrawBotton()
+    {
+        int drawBottonCost = 0;
+        if (drawBottonFlag == 0)
+        {
+            drawBottonCost = 1;
+            drawBottonFlag++;
+        }
+        else if (drawBottonFlag == 1)
+        {
+            drawBottonCost = 2;
+            drawBottonFlag++;
+        }
+        else
+        {
+            return;
+        }
+        photonView.RPC("DrawBottonRPC", RpcTarget.All, drawBottonCost);
+    }
+
+    [PunRPC]
+    public void DrawBottonRPC(int cost, PhotonMessageInfo info)
+    {
+        bool mine = (PhotonNetwork.LocalPlayer.ActorNumber == info.Sender.ActorNumber);
+
+        ReduceSeeds(cost, mine);
+        DrawCard(mine);
+    }
+
+    public int growTreeFlag = 0;
+
+    public void GrowTree()
+    {
+        photonView.RPC("GrowTreeRPC", RpcTarget.All);
+    }
+
+    [PunRPC]
+    public void GrowTreeRPC(PhotonMessageInfo info)
+    {
+        bool mine = (PhotonNetwork.LocalPlayer.ActorNumber == info.Sender.ActorNumber);
+        ReduceSeeds(2, mine);
+        if (mine)
+        {
+            if (growTreeFlag == 0)
+            {
+                playerTree += 1;
+                growTreeFlag++;
+            }
+            else if (growTreeFlag == 1)
+            {
+                playerTree += 1;
+                growTreeFlag++;
+            }
+        }
+        else
+        {
+            if (growTreeFlag == 0)
+            {
+                enemyTree += 1;
+                growTreeFlag++;
+            }
+            else if (growTreeFlag == 1)
+            {
+                enemyTree += 1;
+                growTreeFlag++;
+            }
+        }
+    }
+
     // カード同士のバトル処理
     public void CardBattle(CardController attackCard, CardController defenceCard)
     {
@@ -289,12 +410,12 @@ public partial class GameManager : MonoBehaviourPun
     }
 
     // フィールド上のカードの攻撃可能状態を設定
-    void SetAttackableFieldCard(CardController[] cardList, bool canAttack)
+    void SetAttackableFieldCard(CardController[] cardList, bool canUse)
     {
         foreach (CardController card in cardList)
         {
-            card.model.canAttack = canAttack;
-            card.view.SetCanAttackPanel(canAttack);
+            card.model.canUse = canUse;
+            card.view.SetCanAttackPanel(card.model.canAttack && canUse);
         }
     }
 
@@ -357,36 +478,51 @@ public partial class GameManager : MonoBehaviourPun
         enemyLeaderHPText.text = enemyLeaderHP.ToString();
     }
 
-    // マナポイントのUI表示を更新
-    void ShowManaPoint()
+    // シードのUI表示を更新
+    void ShowSeed()
     {
-        playerManaPointText.text = playerManaPoint.ToString();
-        playerDefaultManaPointText.text = playerDefaultManaPoint.ToString();
+        playerTreeText.text = playerTree.ToString();
+        playerSeedsText.text = playerSeeds.ToString();
+
+        enemyTreeText.text = enemyTree.ToString();
+        enemySeedsText.text = enemySeeds.ToString();
     }
 
-    // マナポイントを消費する
-    public void ReduceManaPoint(int cost)
+    //ReduceSeedsを全員に通知
+    void CallReduceSeeds(int cost, bool mine)
     {
-        playerManaPoint -= cost;
-        ShowManaPoint();
+        photonView.RPC("CallReduceSeedsRPC", RpcTarget.All, cost, mine);
+    }
 
-        SetCanUsePanelHand();
+    [PunRPC]
+    void CallReduceSeedsRPC(int cost, bool tmpmine, PhotonMessageInfo info)
+    {
+        bool mine = (PhotonNetwork.LocalPlayer.ActorNumber != info.Sender.ActorNumber) ^ tmpmine;
+        ReduceSeeds(cost, mine);
+    }
+
+    // シードを消費する
+    public void ReduceSeeds(int cost, bool mine)
+    {
+        if (mine)
+        {
+            playerSeeds -= cost;
+        }
+        else
+        {
+            enemySeeds -= cost;
+        }
     }
 
     // 手札のカードの使用可能状態を更新
     void SetCanUsePanelHand()
     {
-        CardController[] playerHandCardList = playerHand.GetComponentsInChildren<CardController>();
-        foreach (CardController card in playerHandCardList)
+        if (isPlayerTurn)
         {
-            if (card.model.cost <= playerManaPoint)
+            CardController[] playerHandCardList = playerHand.GetComponentsInChildren<CardController>();
+            foreach (CardController card in playerHandCardList)
             {
-                card.model.canUse = true;
-                card.view.SetCanUsePanel(card.model.canUse);
-            }
-            else
-            {
-                card.model.canUse = false;
+                card.model.canUse = (card.model.cost <= playerSeeds);
                 card.view.SetCanUsePanel(card.model.canUse);
             }
         }
@@ -404,7 +540,8 @@ public partial class GameManager : MonoBehaviourPun
 
         if (card.model.cardCategory == CardCategory.Anima)
         {
-            ReduceManaPoint(card.model.cost);
+            CallReduceSeeds(card.model.cost, true);
+            SetPlace(card, PlaceList.Field);
             card.movement.cardParent = playerField;
             card.DropField();
             // カード効果を発動
@@ -412,7 +549,7 @@ public partial class GameManager : MonoBehaviourPun
         }
         else if (card.model.cardCategory == CardCategory.Grace)
         {
-            ReduceManaPoint(card.model.cost);
+            CallReduceSeeds(card.model.cost, true);
             UseCardEffect(card, card, CardEffectType.Grace);
             card.UseGrace();
         }
@@ -424,21 +561,19 @@ public partial class GameManager : MonoBehaviourPun
     }
 
     [PunRPC]
-    void SetPlacePRC(int cardIns, string placeName)
+    public void SetPlaceRPC(int cardIns, string placeName)
     {
         CardController card = FindCardByInstanceID(cardIns);
-
         
         if (card != null)
         {
             Transform parentTransform = GetPlace(card.model.PlayerCard, placeName);
-            card.GetComponent<Transform>().SetParent(parentTransform, false);
+            card.transform.SetParent(parentTransform, false);
         }
     }
 
     Transform GetPlace(bool myCard, string placeName)
     {
-        
         Transform transform;
 
         // 自分のカードか敵のカードかと、配置場所に応じて親Transformを決定
@@ -450,10 +585,13 @@ public partial class GameManager : MonoBehaviourPun
         {
             transform = myCard ? playerField : enemyField;
         }
+        else if (placeName == PlaceList.Deck.ToString())
+        {
+            transform = myCard ? playerDeck : enemyDeck;
+        }
         else
         {
-            Debug.LogError("Invalid place name");
-            return null;
+            transform = this.transform;
         }
         return transform;
     }

@@ -25,8 +25,11 @@ public class CardModel
     // 状態管理
     public bool canUse = false;
     public bool onField = false;
-    public bool canAttack = false;
+    public bool canAttack = true;
     public bool PlayerCard = true;
+
+    // 初期能力
+    public bool earlier = false;
 
     // フィールド効果・状態異常
     public int flnCost = 0;
@@ -54,6 +57,9 @@ public class CardModel
         devote = cardEntity.devote;
 
         icon = cardEntity.icon;
+
+        earlier = cardEntity.earlier;
+
 
         PlayerCard = playerCard;
     }

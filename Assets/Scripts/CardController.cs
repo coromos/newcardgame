@@ -55,7 +55,7 @@ public class CardController : MonoBehaviourPun
     public void DropField()
     {
         model.onField = true;
-        model.canUse = false;
+        model.canUse = model.earlier;
         view.SetCanUsePanel(model.canUse);
     }
 

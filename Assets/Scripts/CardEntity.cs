@@ -10,9 +10,13 @@ public class CardEntity : ScriptableObject
     public new string name;
     public CardCategory cardCategory;
     public CardAttribute cardAttribute;
+    public CardStain[] cardStains;
     public int cost;
     public int toughness;
     public int power;
     public int devote;
     public Sprite icon;
+
+    public bool earlier = false;
+    public bool interference = false;
 }

@@ -7,6 +7,7 @@ using DG.Tweening;
 // カードのドラッグ・移動・アニメーションを管理するクラス
 public class CardMovement : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
+    public Vector3 position;
     public Transform cardParent; // ドラッグ前の親Transform
     CardController card;         // カードのコントローラー
     bool canDrag = true;         // ドラッグ可能かどうか
@@ -20,7 +21,7 @@ public class CardMovement : MonoBehaviour, IDragHandler, IBeginDragHandler, IEnd
         // フィールド上のカードは攻撃可能な場合のみドラッグ可能
         if (card.model.onField)
         {
-            if (!card.model.canAttack)
+            if (!(card.model.canAttack && card.model.canUse))
             {
                 canDrag = false;
             }
@@ -41,8 +42,7 @@ public class CardMovement : MonoBehaviour, IDragHandler, IBeginDragHandler, IEnd
         }
 
         // 親Transformを退避し、Canvas上に移動
-        cardParent = transform.parent;
-        transform.SetParent(cardParent.parent, false);
+        position = transform.position;
         GetComponent<CanvasGroup>().blocksRaycasts = false;
 
         if (!card.model.onField)
@@ -69,7 +69,8 @@ public class CardMovement : MonoBehaviour, IDragHandler, IBeginDragHandler, IEnd
         }
 
         // 元の親Transformに戻す
-        transform.SetParent(cardParent, false);
+        if (card.model.canUse || card.model.onField)
+            transform.position = position;
         GetComponent<CanvasGroup>().blocksRaycasts = true;
 
         UIManager.instance.SetUseGracePanel(false);
