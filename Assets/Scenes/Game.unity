@@ -1929,7 +1929,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 821137413}
         m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: ChangeTurn
+        m_MethodName: DrawBotton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2470,7 +2470,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 821137413}
         m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: ChangeTurn
+        m_MethodName: GrowTree
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
