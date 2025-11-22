@@ -31,11 +31,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         if (PhotonNetwork.CurrentRoom != null &&
             PhotonNetwork.CurrentRoom.PlayerCount == PhotonNetwork.CurrentRoom.MaxPlayers)
         {
-            // マスタークライアントがシーン読み込みを行う（重複防止）
-            if (PhotonNetwork.IsMasterClient)
-            {
-                PhotonNetwork.LoadLevel("Game"); // ゲームシーンへ
-            }
+            PhotonNetwork.LoadLevel("Game"); // ゲームシーンへ
         }
         else
         {

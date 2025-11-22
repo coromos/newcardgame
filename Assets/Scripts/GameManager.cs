@@ -585,6 +585,10 @@ public partial class GameManager : MonoBehaviourPun
         if (isPlayerTurn)
         {
             CardController[] playerHandCardList = playerHand.GetComponentsInChildren<CardController>();
+            if (playerHandCardList == null)
+            {
+                return;
+            }
             foreach (CardController card in playerHandCardList)
             {
                 card.model.canUse = (card.model.cost <= playerSeeds);
