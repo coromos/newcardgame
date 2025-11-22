@@ -408,6 +408,15 @@ public partial class GameManager : MonoBehaviourPun
 
     public void GrowTree()
     {
+        if (growTreeFlag == 0 && playerSeeds >= 2)
+        {
+            // 初回
+        }
+        else
+        {
+            return;
+        }
+        growTreeFlag++;
         photonView.RPC("GrowTreeRPC", RpcTarget.All);
     }
 
