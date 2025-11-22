@@ -310,7 +310,11 @@ public partial class GameManager : MonoBehaviourPun
         SetAttackableFieldCard(playerFieldCardList, true);
 
         // シードを加算
-        playerSeeds += playerTree;
+        CallAddSeeds(playerTree, true);
+
+        //ボタンのフラグリセット
+        drawBottonFlag = 0;
+        growTreeFlag = 0;
     }
 
     // 敵のターン処理
@@ -378,12 +382,12 @@ public partial class GameManager : MonoBehaviourPun
     public void DrawBotton()
     {
         int drawBottonCost = 0;
-        if (drawBottonFlag == 0)
+        if (drawBottonFlag == 0 && playerSeeds >= 1)
         {
             drawBottonCost = 1;
             drawBottonFlag++;
         }
-        else if (drawBottonFlag == 1)
+        else if (drawBottonFlag == 1 && playerSeeds >= 2)
         {
             drawBottonCost = 2;
             drawBottonFlag++;
@@ -427,30 +431,35 @@ public partial class GameManager : MonoBehaviourPun
         ReduceSeeds(2, mine);
         if (mine)
         {
-            if (growTreeFlag == 0)
-            {
-                playerTree += 1;
-                growTreeFlag++;
-            }
-            else if (growTreeFlag == 1)
-            {
-                playerTree += 1;
-                growTreeFlag++;
-            }
+            playerTree += 1;
+            growTreeFlag++;
         }
         else
         {
-            if (growTreeFlag == 0)
-            {
-                enemyTree += 1;
-                growTreeFlag++;
-            }
-            else if (growTreeFlag == 1)
-            {
-                enemyTree += 1;
-                growTreeFlag++;
-            }
+            enemyTree += 1;
+            growTreeFlag++;
         }
+    }
+
+    //Seedsを増やすことを全員に通知
+    void CallAddSeeds(int amount, bool mine)
+    {
+        photonView.RPC("CallAddSeedsRPC", RpcTarget.All, amount, mine);
+    }
+
+    [PunRPC]
+    void CallAddSeedsRPC(int amount, bool tmpmine, PhotonMessageInfo info)
+    {
+        bool mine = (PhotonNetwork.LocalPlayer.ActorNumber != info.Sender.ActorNumber) ^ tmpmine;
+        if (mine)
+        {
+            playerSeeds += amount;
+        }
+        else
+        {
+            enemySeeds += amount;
+        }
+
     }
 
     // カード同士のバトル処理
