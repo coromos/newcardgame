@@ -1076,7 +1076,7 @@ MonoBehaviour:
   enemySeedsText: {fileID: 1160000042}
   playerTreeText: {fileID: 1186264446}
   enemyTreeText: {fileID: 1490315528}
-  isPlayerTurn: 1
+  isPlayerTurn: 0
   playerLeaderHP: 0
   playerSeeds: 0
   playerTree: 0

@@ -149,7 +149,7 @@ public partial class GameManager : MonoBehaviourPun
         {
             cardInsID = System.Int32.MinValue;
         }
-            enemyLeaderHP = 0;
+        enemyLeaderHP = 0;
         playerLeaderHP = 0;
 
         // デッキをシャッフル
@@ -161,6 +161,9 @@ public partial class GameManager : MonoBehaviourPun
 
         playerSeeds = 0;
         playerTree = 4;
+
+        enemySeeds = 0;
+        enemyTree = 4;
 
         // 初期手札の配布
         SetStartHand();
