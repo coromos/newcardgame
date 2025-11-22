@@ -11,11 +11,11 @@ public class CardModel
     public string name;
     public CardCategory cardCategory;
     public CardAttribute cardAttribute;
+    public CardStain[] cardStains;
     public int cost;
     public int toughness;
     public int power;
     public int devote;
-    public CardEffectType cardEffectType;
     public Sprite icon;
 
     public string CardType;
@@ -30,6 +30,15 @@ public class CardModel
 
     // 初期能力
     public bool earlier = false;
+
+    // ScriptableObject 側で定義されている初期能力（CardEntity からコピー）
+    public bool interference = false;
+    public bool stealth = false;
+    public bool strong = false;
+    public bool flying = false;
+    public bool homeostasis = false;
+    public bool alone = false;
+    public bool noaction = false;
 
     // フィールド効果・状態異常
     public int flnCost = 0;
@@ -46,10 +55,17 @@ public class CardModel
     {
         CardEntity cardEntity = Resources.Load<CardEntity>("CardEntityList/Card" + cardID);
 
+        if (cardEntity == null)
+        {
+            Debug.LogError($"CardEntity not found: Card{cardID}");
+            return;
+        }
+
         cardId = cardEntity.cardId;
 
         cardCategory = cardEntity.cardCategory;
         cardAttribute = cardEntity.cardAttribute;
+        cardStains = cardEntity.cardStains;
         name = cardEntity.name;
         cost = cardEntity.cost;
         toughness = cardEntity.toughness;
@@ -58,8 +74,15 @@ public class CardModel
 
         icon = cardEntity.icon;
 
+        // ScriptableObject 側の初期能力をモデルへコピー
         earlier = cardEntity.earlier;
-
+        interference = cardEntity.interference;
+        stealth = cardEntity.stealth;
+        strong = cardEntity.strong;
+        flying = cardEntity.flying;
+        homeostasis = cardEntity.homeostasis;
+        alone = cardEntity.alone;
+        noaction = cardEntity.noaction;
 
         PlayerCard = playerCard;
     }
