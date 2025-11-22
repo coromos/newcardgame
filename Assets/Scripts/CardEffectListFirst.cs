@@ -32,12 +32,16 @@ public partial class GameManager : MonoBehaviourPun
     [PunRPC]
     public void Alive1(CardController SourceCard, CardController targetCard, CardController refCard)
     {
-        DrawCard(playerHand);
+        CallDrawCard(true);
     }
 
     public void Grace4(CardController SourceCard, CardController targetCard, CardController refCard)
     {
-        DrawCard(playerHand);
+        //ƒJ[ƒh‚ğ2–‡ˆø‚­
+        for (int i = 0; i < 2; i++)
+        {
+            CallDrawCard(true);
+        }
         Debug.Log("Use Crace4!");
     }
 
