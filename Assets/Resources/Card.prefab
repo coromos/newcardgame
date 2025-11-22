@@ -438,7 +438,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 36c422b9ec7a3164fb837dc110a89c14, type: 3}
+  m_Sprite: {fileID: -4751826239678004093, guid: 6e5425fc7ce571f4387a3e490eefaf6f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -689,6 +689,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9516011d4f612514da6b633f2d309ad4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  position: {x: 0, y: 0, z: 0}
   cardParent: {fileID: 0}
 --- !u!114 &4586436573413985872
 MonoBehaviour:
@@ -705,6 +706,7 @@ MonoBehaviour:
   view: {fileID: 0}
   movement: {fileID: 0}
   addEffectList: []
+  cardInsID: 0
 --- !u!114 &644335259983375635
 MonoBehaviour:
   m_ObjectHideFlags: 0

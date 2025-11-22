@@ -16,9 +16,17 @@ MonoBehaviour:
   name: Celubelos
   cardCategory: 1
   cardAttribute: 6
+  cardStains: 
   cost: 4
   toughness: 13
   power: 6
   devote: 4
-  cardEffectType: 2
-  icon: {fileID: -826743492, guid: df6ca20763c85d14a9ba95c0c110b417, type: 3}
+  icon: {fileID: -4751826239678004093, guid: 6e5425fc7ce571f4387a3e490eefaf6f, type: 3}
+  earlier: 0
+  interference: 0
+  stealth: 0
+  strong: 0
+  flying: 0
+  homeostasis: 0
+  alone: 0
+  noaction: 0
