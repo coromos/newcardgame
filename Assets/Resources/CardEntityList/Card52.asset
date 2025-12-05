@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6efb885a318c914899ec07fef40f10c, type: 3}
+  m_Name: Card52
+  m_EditorClassIdentifier: 
+  cardId: 52
+  name: "\u30DA\u30AC\u30B5\u30B9"
+  cardCategory: 0
+  cardAttribute: 3
+  cardStains: 
+  cardRarity: 4
+  cost: 8
+  toughness: 42
+  power: 21
+  devote: 30
+  icon: {fileID: 820538877098150169, guid: 7a0b722601fda064f977ed61a3474f89, type: 3}
+  earlier: 1
+  interference: 0
+  stealth: 0
+  strong: 0
+  flying: 1
+  homeostasis: 0
+  alone: 0
+  noaction: 0

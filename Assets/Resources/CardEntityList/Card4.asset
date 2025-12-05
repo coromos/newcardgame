@@ -13,12 +13,21 @@ MonoBehaviour:
   m_Name: Card4
   m_EditorClassIdentifier: 
   cardId: 4
-  name: Celubelos
-  cardCategory: 1
-  cardAttribute: 6
-  cost: 4
-  toughness: 13
-  power: 6
+  name: "\u9580\u756A"
+  cardCategory: 0
+  cardAttribute: 0
+  cardStains: 
+  cardRarity: 2
+  cost: 5
+  toughness: 42
+  power: 10
   devote: 4
-  cardEffectType: 2
-  icon: {fileID: -826743492, guid: df6ca20763c85d14a9ba95c0c110b417, type: 3}
+  icon: {fileID: -4880320907171913256, guid: 4f88b20411fac2d4692a468dba2cd7c7, type: 3}
+  earlier: 0
+  interference: 1
+  stealth: 0
+  strong: 0
+  flying: 0
+  homeostasis: 0
+  alone: 0
+  noaction: 1

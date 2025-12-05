@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6efb885a318c914899ec07fef40f10c, type: 3}
+  m_Name: Card28
+  m_EditorClassIdentifier: 
+  cardId: 28
+  name: "\u8759\u8760"
+  cardCategory: 0
+  cardAttribute: 1
+  cardStains: 
+  cardRarity: 3
+  cost: 3
+  toughness: 22
+  power: 11
+  devote: 11
+  icon: {fileID: 7189919848080033621, guid: 48620978789381c4987ae98a2bdaa385, type: 3}
+  earlier: 0
+  interference: 0
+  stealth: 0
+  strong: 0
+  flying: 0
+  homeostasis: 0
+  alone: 0
+  noaction: 0

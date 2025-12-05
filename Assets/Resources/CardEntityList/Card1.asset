@@ -13,17 +13,18 @@ MonoBehaviour:
   m_Name: Card1
   m_EditorClassIdentifier: 
   cardId: 1
-  name: Gunner
+  name: "\u660E\u65E5\u306E\u795E\u8A71"
   cardCategory: 0
   cardAttribute: 0
   cardStains: 
-  cost: 1
-  toughness: 5
-  power: 2
-  devote: 2
-  icon: {fileID: 21300000, guid: 379c50fa63cd6d34e981a49dd0f914ec, type: 3}
+  cardRarity: 0
+  cost: 10
+  toughness: 65
+  power: 10
+  devote: 10
+  icon: {fileID: 4465262579690441637, guid: 3780ab6879109e64ebfeb75dc4447fa2, type: 3}
   earlier: 0
-  interference: 0
+  interference: 1
   stealth: 0
   strong: 0
   flying: 0
