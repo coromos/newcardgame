@@ -58,6 +58,8 @@ MonoBehaviour:
   - CallReduceSeedsRPC
   - RPC_StartGame
   - CallAddSeedsRPC
+  - DevoteToLeaderRPC
+  - DevoteRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

@@ -27,7 +27,6 @@ public partial class GameManager : MonoBehaviourPun
 
     public bool isPlayerTurn = false; //
     List<int> deck = new List<int>() { 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3 };  //
-    List<int> enemy_deck = new List<int>() { 1,1,1,1,1,1,1,1, 2,2,2,2,2,2,2,3,3,3,3,3 };  //
 
     public int playerLeaderHP;
     public int playerSeeds;
@@ -317,65 +316,65 @@ public partial class GameManager : MonoBehaviourPun
         growTreeFlag = 0;
     }
 
-    // 敵のターン処理
-    IEnumerator EnemyTurn()
-    {
-        Debug.Log("Enemyのターン");
+    //// 敵のターン処理
+    //IEnumerator EnemyTurn()
+    //{
+    //    Debug.Log("Enemyのターン");
 
-        CardController[] enemyFieldCardList = enemyField.GetComponentsInChildren<CardController>();
+    //    CardController[] enemyFieldCardList = enemyField.GetComponentsInChildren<CardController>();
 
-        yield return new WaitForSeconds(0.5f);
+    //    yield return new WaitForSeconds(0.5f);
 
-        SetAttackableFieldCard(enemyFieldCardList, true);
+    //    SetAttackableFieldCard(enemyFieldCardList, true);
 
-        yield return new WaitForSeconds(0.5f);
+    //    yield return new WaitForSeconds(0.5f);
 
-        // 敵デッキからカードを引いてフィールドに配置
-        if (enemy_deck.Count != 0)
-        {
-            int cardID = enemy_deck[0];
-            enemy_deck.RemoveAt(0);
-            if (enemyFieldCardList.Length < 5)
-            {
-                CreateCard(cardID, false, PlaceList.Field);
-            }
-        }
+    //    // 敵デッキからカードを引いてフィールドに配置
+    //    if (enemy_deck.Count != 0)
+    //    {
+    //        int cardID = enemy_deck[0];
+    //        enemy_deck.RemoveAt(0);
+    //        if (enemyFieldCardList.Length < 5)
+    //        {
+    //            CreateCard(cardID, false, PlaceList.Field);
+    //        }
+    //    }
 
-        yield return new WaitForSeconds(0.5f);
+    //    yield return new WaitForSeconds(0.5f);
 
-        int index = 0;
+    //    int index = 0;
 
-        // 攻撃可能な敵カードがある限り攻撃処理を繰り返す
-        while (Array.Exists(enemyFieldCardList, card => card.model.canAttack))
-        {
-            CardController[] enemyCanAttackCardList = Array.FindAll(enemyFieldCardList, card => card.model.canAttack);
-            CardController attackCard = enemyCanAttackCardList[0];
+    //    // 攻撃可能な敵カードがある限り攻撃処理を繰り返す
+    //    while (Array.Exists(enemyFieldCardList, card => card.model.canAttack))
+    //    {
+    //        CardController[] enemyCanAttackCardList = Array.FindAll(enemyFieldCardList, card => card.model.canAttack);
+    //        CardController attackCard = enemyCanAttackCardList[0];
 
-            CardController[] playerFieldCardList = playerField.GetComponentsInChildren<CardController>();
+    //        CardController[] playerFieldCardList = playerField.GetComponentsInChildren<CardController>();
 
-            if(playerFieldCardList.Length > 0) // プレイヤーの場にカードがある場合
-            {
-                // ランダムなプレイヤーカードを攻撃
-                index = UnityEngine.Random.Range(0, playerFieldCardList.Length);
-                CardController defenceCard = playerFieldCardList[index];
-                yield return StartCoroutine(attackCard.movement.AttackMotion(defenceCard.transform));
-                CardBattle(attackCard, defenceCard);
-            }
-            else // プレイヤーの場にカードがない場合はリーダーを攻撃
-            {
-                yield return StartCoroutine(attackCard.movement.AttackMotion(targetField));
-                DevoteToLeader(attackCard);
-            }
+    //        if(playerFieldCardList.Length > 0) // プレイヤーの場にカードがある場合
+    //        {
+    //            // ランダムなプレイヤーカードを攻撃
+    //            index = UnityEngine.Random.Range(0, playerFieldCardList.Length);
+    //            CardController defenceCard = playerFieldCardList[index];
+    //            yield return StartCoroutine(attackCard.movement.AttackMotion(defenceCard.transform));
+    //            CardBattle(attackCard, defenceCard);
+    //        }
+    //        else // プレイヤーの場にカードがない場合はリーダーを攻撃
+    //        {
+    //            yield return StartCoroutine(attackCard.movement.AttackMotion(targetField));
+    //            Devote(attackCard);
+    //        }
 
-            yield return new WaitForSeconds(0.5f);
+    //        yield return new WaitForSeconds(0.5f);
 
-            enemyFieldCardList = enemyField.GetComponentsInChildren<CardController>();
-        }
+    //        enemyFieldCardList = enemyField.GetComponentsInChildren<CardController>();
+    //    }
 
 
         // ターン終了
-        ChangeTurn();
-    }
+    //    ChangeTurn();
+    //}
 
     public int drawBottonFlag = 0;
 
@@ -506,7 +505,7 @@ public partial class GameManager : MonoBehaviourPun
     }
 
     // リーダーへの攻撃処理
-    public void DevoteToLeader(CardController attackCard)
+    public void Devote(CardController attackCard)
     {
         if (attackCard.model.canAttack == false)
         {
@@ -531,6 +530,22 @@ public partial class GameManager : MonoBehaviourPun
         attackCard.GrantDamage(attackCard.model.devote);
         attackCard.DamageDestroy();
         ShowLeaderHP();
+    }
+
+    //リーダーへの攻撃処理のRPC
+    [PunRPC]
+    public void DevoteRPC(int attackCardID)
+    {
+        CardController attackCard = FindCardByInstanceID(attackCardID);
+        if (attackCard != null)
+        {
+            Devote(attackCard);
+        }
+    }
+
+    public void CallDevote(CardController attackCard)
+    {
+        photonView.RPC("DevoteRPC", RpcTarget.All, attackCard.cardInsID);
     }
 
     // リーダーのHPを加算

@@ -12,6 +12,7 @@ public class CardModel
     public CardCategory cardCategory;
     public CardAttribute cardAttribute;
     public CardStain[] cardStains;
+    public CardRarity cardRarity;
     public int cost;
     public int toughness;
     public int power;
@@ -66,6 +67,7 @@ public class CardModel
         cardCategory = cardEntity.cardCategory;
         cardAttribute = cardEntity.cardAttribute;
         cardStains = cardEntity.cardStains;
+        cardRarity = cardEntity.cardRarity;
         name = cardEntity.name;
         cost = cardEntity.cost;
         toughness = cardEntity.toughness;

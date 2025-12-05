@@ -22,9 +22,10 @@ public enum CardAttribute
 public enum CardStain
 {
     None,
-    Insect,
-    Dinosaur,
-    Devil,
+    Insect,//虫
+    Dinosaur,//恐竜
+    Devil,//悪魔
+    Infectious,//感染体
 
 }
 

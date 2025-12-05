@@ -11,6 +11,6 @@ public class AttackedLeader : MonoBehaviour, IDropHandler
         CardController devoteCard = eventData.pointerDrag.GetComponent<CardController>();
 
         // ゲームマネージャーにリーダーへの攻撃処理を依頼
-        GameManager.instance.DevoteToLeader(devoteCard);
+        GameManager.instance.CallDevote(devoteCard);
     }
 }
