@@ -10,7 +10,7 @@ public enum CardCategory
 
 public enum CardAttribute
 {
-    Intellect,
+    Intellect,  
     Wildness,
     Ancient,
     Fantasy,
@@ -26,4 +26,13 @@ public enum CardStain
     Dinosaur,
     Devil,
 
+}
+
+public enum CardRarity
+{
+    Limited,
+    Rare,
+    Normal,
+    Basic,
+    Token
 }

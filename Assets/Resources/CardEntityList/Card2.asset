@@ -13,12 +13,21 @@ MonoBehaviour:
   m_Name: Card2
   m_EditorClassIdentifier: 
   cardId: 2
-  name: Brizard
+  name: "\u885B\u5175"
   cardCategory: 0
-  cardAttribute: 6
-  cost: 2
-  toughness: 10
-  power: 4
+  cardAttribute: 0
+  cardStains: 
+  cardRarity: 1
+  cost: 6
+  toughness: 48
+  power: 7
   devote: 6
-  cardEffectType: 0
-  icon: {fileID: 21300000, guid: c1980abec00da2d4881407f8f33a2464, type: 3}
+  icon: {fileID: -4751826239678004093, guid: 452e74142665df545a66f4ea788ecc84, type: 3}
+  earlier: 0
+  interference: 1
+  stealth: 0
+  strong: 0
+  flying: 0
+  homeostasis: 0
+  alone: 0
+  noaction: 1

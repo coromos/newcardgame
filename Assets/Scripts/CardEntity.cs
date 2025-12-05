@@ -11,6 +11,7 @@ public class CardEntity : ScriptableObject
     public CardCategory cardCategory;
     public CardAttribute cardAttribute;
     public CardStain[] cardStains;
+    public CardRarity cardRarity;
     public int cost;
     public int toughness;
     public int power;
