@@ -22,7 +22,7 @@ MonoBehaviour:
   toughness: 24
   power: 12
   devote: 12
-  icon: {fileID: 0}
+  icon: {fileID: 8757455812104879967, guid: 9e5f6b1c7183058469b279f70355710b, type: 3}
   earlier: 0
   interference: 0
   stealth: 0

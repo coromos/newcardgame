@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 5426c84661141694090e97f69b4d558d
+guid: a2f0036a347986c46a085d8b03b63e12
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4070454107659035868
-    second: Yasei_tmp_0
+      213: 3441388905941413137
+    second: Saikin_Kinokonotakurami_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,7 +100,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Yasei_tmp_0
+      name: Saikin_Kinokonotakurami_0
       rect:
         serializedVersion: 2
         x: 0
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 42b14762e87d287c0800000000000000
-      internalID: -4070454107659035868
+      spriteID: 11dab980af442cf20800000000000000
+      internalID: 3441388905941413137
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Yasei_tmp_0: -4070454107659035868
+      Saikin_Kinokonotakurami_0: 3441388905941413137
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

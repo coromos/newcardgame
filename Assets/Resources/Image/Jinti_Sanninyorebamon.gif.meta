@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 6fe8ff28286aae946abec0d9cf256997
+guid: 5d7241d0a8c7f9a47a87d0d88eaaf456
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -222404265577647768
-    second: Mumei_tmp_0
+      213: -7749100587667320036
+    second: Jinti_Sanninyorebamon_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,7 +100,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Mumei_tmp_0
+      name: Jinti_Sanninyorebamon_0
       rect:
         serializedVersion: 2
         x: 0
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 86176b1bf7cd9ecf0800000000000000
-      internalID: -222404265577647768
+      spriteID: c13915f621aa57490800000000000000
+      internalID: -7749100587667320036
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Mumei_tmp_0: -222404265577647768
+      Jinti_Sanninyorebamon_0: -7749100587667320036
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

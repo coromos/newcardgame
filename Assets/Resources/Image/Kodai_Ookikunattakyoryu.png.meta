@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 51f48249997f5d54b8ccbf13a3b3f30a
+guid: 0deb12672312d6e489a3942f78158d9a
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1969392276947545633
-    second: Saikin_Akui_0
+      213: 7503204578700165398
+    second: Kodai_Ookikunattakyoryu_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,7 +100,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Saikin_Akui_0
+      name: Kodai_Ookikunattakyoryu_0
       rect:
         serializedVersion: 2
         x: 0
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: fd1d42d88205ba4e0800000000000000
-      internalID: -1969392276947545633
+      spriteID: 61102868fccb02860800000000000000
+      internalID: 7503204578700165398
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Saikin_Akui_0: -1969392276947545633
+      Kodai_Ookikunattakyoryu_0: 7503204578700165398
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
