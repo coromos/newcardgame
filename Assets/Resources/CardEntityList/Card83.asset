@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Card83
   m_EditorClassIdentifier: 
   cardId: 83
-  name: 
+  name: "\u731B\u308B\u611F\u67D3\u4F53"
   cardCategory: 0
   cardAttribute: 5
-  cardStains: 
+  cardStains: 04000000
   cardRarity: 2
   cost: 2
   toughness: 10

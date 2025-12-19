@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: c4d656986030b1a4e95570434f9f3933
+guid: 576c0d1f88cb7a046831fc974c49553d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7978999752695525836
-    second: Yasei_Kemononosoja_0
+      213: 4523734943449098709
+    second: Kuso_Daitensi_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,7 +100,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Yasei_Kemononosoja_0
+      name: Kuso_Daitensi_0
       rect:
         serializedVersion: 2
         x: 0
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 43e47addff5e44190800000000000000
-      internalID: -7978999752695525836
+      spriteID: 5d92e4a96f887ce30800000000000000
+      internalID: 4523734943449098709
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Yasei_Kemononosoja_0: -7978999752695525836
+      Kuso_Daitensi_0: 4523734943449098709
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

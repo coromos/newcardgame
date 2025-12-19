@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Card104
   m_EditorClassIdentifier: 
   cardId: 104
-  name: "\u5175\u58EBA"
+  name: "\u653E\u6D6A\u8005"
   cardCategory: 0
   cardAttribute: 6
   cardStains: 
@@ -22,7 +22,7 @@ MonoBehaviour:
   toughness: 28
   power: 11
   devote: 14
-  icon: {fileID: 0}
+  icon: {fileID: 7372492286306621244, guid: f50dc74ab0f518c4e874958f70d4706f, type: 3}
   earlier: 0
   interference: 0
   stealth: 0
