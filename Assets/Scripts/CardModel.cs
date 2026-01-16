@@ -25,7 +25,7 @@ public class CardModel
 
     // 状態管理
     public bool canUse = false;
-    public string fieldPosition = "Deck"; // Deck, Hand, Field, Graveyard, Exile    
+    public string fieldPosition = "Deck"; // Deck, Hand, Field, Graveyard, Exile
     public bool canAttack = true;
     public bool PlayerCard = true;
 

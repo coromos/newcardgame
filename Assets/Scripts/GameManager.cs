@@ -270,7 +270,10 @@ public partial class GameManager : MonoBehaviourPun
     public void ChangeTurn()
     {
         //turn end script Want!!!!
-
+        if (!isPlayerTurn)
+        {
+            return;
+        }
         photonView.RPC("ChangeTurnRPC", RpcTarget.All, true);
     }
 
