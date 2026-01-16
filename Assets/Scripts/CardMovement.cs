@@ -19,7 +19,7 @@ public class CardMovement : MonoBehaviour, IDragHandler, IBeginDragHandler, IEnd
         canDrag = true;
 
         // フィールド上のカードは攻撃可能な場合のみドラッグ可能
-        if (card.model.onField)
+        if (card.model.fieldPosition.Equals(PlaceList.Field.ToString()))
         {
             if (!(card.model.canAttack && card.model.canUse))
             {
@@ -45,7 +45,7 @@ public class CardMovement : MonoBehaviour, IDragHandler, IBeginDragHandler, IEnd
         position = transform.position;
         GetComponent<CanvasGroup>().blocksRaycasts = false;
 
-        if (!card.model.onField)
+        if (!card.model.fieldPosition.Equals(PlaceList.Field.ToString()))
             UIManager.instance.SetUseGracePanel(true);
     }
 
@@ -69,7 +69,7 @@ public class CardMovement : MonoBehaviour, IDragHandler, IBeginDragHandler, IEnd
         }
 
         // 元の親Transformに戻す
-        if (card.model.canUse || card.model.onField)
+        if (card.model.canUse || card.model.fieldPosition.Equals(PlaceList.Field.ToString()))
             transform.position = position;
         GetComponent<CanvasGroup>().blocksRaycasts = true;
 
@@ -97,7 +97,7 @@ public class CardMovement : MonoBehaviour, IDragHandler, IBeginDragHandler, IEnd
     }
 
     // マウスオーバー時の拡大表示
-    public void OnMouseEnter()
+    public void OnMouseEnter(PointerEventData eventData)
     {
         Debug.Log("In");
         Vector3 enpow = new Vector3(1.2f, 1.2f, 1f);
@@ -105,7 +105,7 @@ public class CardMovement : MonoBehaviour, IDragHandler, IBeginDragHandler, IEnd
     }
 
     // マウスアウト時の縮小表示
-    public void OnMouseExit()
+    public void OnMouseExit(PointerEventData eventData)
     {
         Debug.Log("Out");
         Vector3 defaultscale = new Vector3(1f, 1f, 1f);

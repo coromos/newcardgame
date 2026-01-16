@@ -128,7 +128,7 @@ public partial class GameManager : MonoBehaviourPun
         if (gameStarted)
         {
             ShowSeed();
-            if (isPlayerTurn)
+            if (isPlayerTurn && !isSelectingCard)
             {
                 SetCanUsePanelHand();
             }
@@ -189,13 +189,13 @@ public partial class GameManager : MonoBehaviourPun
         if (setCardList != null && setCardList.Length > 0)
         {
             setCardList[0].transform.SetParent(parentTransform, false);
-            setCardList[0].Init(cardID, myCard, cardIns);
+            setCardList[0].Init(cardID, myCard, cardIns, placeName);
         }
         else
         {
             // カードを生成して親Transformの子に設定
             CardController newCard = Instantiate(cardPrefab, parentTransform);
-            newCard.Init(cardID, myCard, cardIns);
+            newCard.Init(cardID, myCard, cardIns, placeName);
         }
         
     }

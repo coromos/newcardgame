@@ -16,4 +16,13 @@ public class AttackedCard : MonoBehaviour, IDropHandler
         // ゲームマネージャーにバトル処理を依頼
         GameManager.instance.CardBattle(attackCard, defenceCard);
     }
+
+    //　カード選択モード時にクリックされた場合の処理
+    public void OnMouseDown()
+    {
+        if (GameManager.instance.isSelectingCard)
+        {
+            GameManager.instance.SetSelectedCard(GetComponent<CardController>());
+        }
+    }
 }

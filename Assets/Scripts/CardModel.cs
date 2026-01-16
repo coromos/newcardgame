@@ -25,7 +25,7 @@ public class CardModel
 
     // 状態管理
     public bool canUse = false;
-    public bool onField = false;
+    public string fieldPosition = "Deck"; // Deck, Hand, Field, Graveyard, Exile    
     public bool canAttack = true;
     public bool PlayerCard = true;
 
@@ -52,7 +52,7 @@ public class CardModel
     public int Poison = 0;
 
     // コンストラクタ：ScriptableObjectからデータを取得
-    public CardModel(int cardID, bool playerCard)
+    public CardModel(int cardID, bool playerCard, string FieldPosition)
     {
         CardEntity cardEntity = Resources.Load<CardEntity>("CardEntityList/Card" + cardID);
 
@@ -87,5 +87,6 @@ public class CardModel
         noaction = cardEntity.noaction;
 
         PlayerCard = playerCard;
+        fieldPosition = FieldPosition;
     }
 }
