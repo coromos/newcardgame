@@ -499,12 +499,12 @@ public partial class GameManager : MonoBehaviourPun
     }
 
     // フィールド上のカードの攻撃可能状態を設定
-    void SetAttackableFieldCard(CardController[] cardList, bool canUse)
+    void SetAttackableFieldCard(CardController[] cardList, bool canAttack)
     {
         foreach (CardController card in cardList)
         {
-            card.model.canUse = canUse;
-            card.view.SetCanAttackPanel(card.model.canAttack && canUse);
+            card.model.canAttack = canAttack;
+            card.view.SetCanAttackPanel(!card.model.noaction && canAttack);
         }
     }
 
