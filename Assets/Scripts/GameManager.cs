@@ -510,13 +510,7 @@ public partial class GameManager : MonoBehaviourPun
 
     // リーダーへの攻撃処理
     public void Devote(CardController attackCard)
-    {
-        if (attackCard.model.canAttack == false)
-        {
-            return;
-        }
-
-        if (attackCard.model.PlayerCard == true) // プレイヤーカードの場合
+    {if (attackCard.model.PlayerCard == true) // プレイヤーカードの場合
         {
             Debug.Log(attackCard.model.name + "がリーダーに奉納");
             CreateThrift(attackCard.model.devote, true);
@@ -549,6 +543,11 @@ public partial class GameManager : MonoBehaviourPun
 
     public void CallDevote(CardController attackCard)
     {
+        if (attackCard.model.canAttack == false)
+        {
+            return;
+        }
+
         photonView.RPC("DevoteRPC", RpcTarget.All, attackCard.cardInsID);
     }
 

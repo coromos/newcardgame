@@ -55,8 +55,8 @@ public class CardController : MonoBehaviourPun
     public void DropField()
     {
         model.fieldPosition = "Field";
-        model.canUse = model.earlier;
-        view.SetCanUsePanel(model.canUse);
+        model.canAttack = model.earlier;
+        view.SetCanUsePanel(model.canAttack);
     }
 
     // Graceカードの使用処理
