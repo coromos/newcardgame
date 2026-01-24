@@ -101,7 +101,6 @@ public class CardMovement : MonoBehaviour,
     // マウスオーバー時の拡大表示
     public void OnPointerEnter(PointerEventData eventData)
     {
-        Debug.Log("In");
         Vector3 enpow = new Vector3(1.2f, 1.2f, 1f);
         transform.DOScale(enpow, 0.1f);
     }
@@ -109,7 +108,6 @@ public class CardMovement : MonoBehaviour,
     // マウスアウト時の縮小表示
     public void OnPointerExit(PointerEventData eventData)
     {
-        Debug.Log("Out");
         Vector3 defaultscale = new Vector3(1f, 1f, 1f);
         transform.DOScale(defaultscale, 0.1f);
     }

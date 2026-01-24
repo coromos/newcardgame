@@ -274,6 +274,7 @@ public partial class GameManager : MonoBehaviourPun
         {
             return;
         }
+        TurnEnd();
         photonView.RPC("ChangeTurnRPC", RpcTarget.All, true);
     }
 
@@ -712,5 +713,18 @@ public partial class GameManager : MonoBehaviourPun
             }
         }
         return null;
+    }
+
+    // ターン開始時処理
+    // 
+
+
+    // ターン終了時処理
+    // 毒処理
+    // カードのターン終了時処理
+    // 一時バフのリセット
+    void TurnEnd()
+    {
+
     }
 }

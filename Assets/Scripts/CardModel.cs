@@ -46,6 +46,10 @@ public class CardModel
     public int flnToughness = 0;
     public int flnPower = 0;
     public int flnDevote = 0;
+    public int tmpCost = 0;
+    public int tmpToughness = 0;
+    public int tmpPower = 0;
+    public int tmpDevote = 0;
     public int damage = 0;
     public int stayturn = 0;
     public int Curse = -1;
