@@ -26,7 +26,7 @@ public partial class GameManager : MonoBehaviourPun
     [SerializeField] Text playerTreeText, enemyTreeText;
 
     public bool isPlayerTurn = false; //
-    List<int> deck = new List<int>() { 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3 };  //
+    List<int> deck = new List<int>() { 4, 4, 4, 22, 22, 22, 29, 29, 29, 28, 28, 28, 26, 26, 26, 104, 104, 104, 21, 21, 21, 52, 52, 52, 38, 38, 38, 27, 27, 27 };  //
 
     public int playerLeaderHP;
     public int playerSeeds;
