@@ -1,5 +1,10 @@
-using Photon.Pun;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using System;
+using System.Linq;
+using Photon.Pun;
 
 public enum CardEffectType
 {
@@ -81,10 +86,29 @@ public partial class GameManager : MonoBehaviourPun
     public bool isSelectingCard = false;
     public CardController selectCard;
 
-    // カード指定メソッド
-    // 引数に選択対象の条件を指定
-    public void PickupCardForEffect(
-        string[] fieldPositions = null,
+    //カード選択用リスト取得メソッド
+    //引数で指定された場所のカードを取得する
+    public List<CardController> GetCardFromPlace(
+        bool[] MyCards,
+        string[] cardPlaces
+        )
+    {
+        Transform transform;
+        List<CardController> baseCardList = new List<CardController>();
+        int placeNum = MyCards.Length;
+        for (int i = 0; i < placeNum; i++)
+        {
+            transform = GetPace(MyCards[i], cardPlaces[i]);
+            baseCardList.AddRange(transform.GetComponentsInChildren<CardController>());
+        }
+
+        return baseCardList;
+    }
+
+    // カード限定メソッド
+    // 引数のカードリストから他の条件でカードを絞り込む
+    public List<CardController> PickupCardForEffect(
+        List<CardController> baseCardList,
         CardCategory[] cardCategory = null,
         CardAttribute[] cardAttribute = null,
         CardStain[] cardStain = null,
@@ -99,48 +123,40 @@ public partial class GameManager : MonoBehaviourPun
         int? maxDevote = null,
         int? minDamage = null,
         int? maxDamage = null,
-        bool? canAttack = null,
-        bool? playerCard = null,
-        bool highLight = false
+        bool? canAttack = null
         )
     {
-        bool isSelectable = false;
-        CardController[] cardControllers = FindObjectsByType<CardController>(FindObjectsSortMode.None);
-        foreach (var cardController in cardControllers)
+        List<CardController> selectedCards = new List<CardController>();
+        foreach (var cardController in baseCardList)
         {
-            isSelectable = true;
-            if (fieldPositions != null && System.Array.IndexOf(fieldPositions, cardController.model.fieldPosition) < 0)
-                isSelectable = false;
-            else if (cardCategory != null && System.Array.IndexOf(cardCategory, cardController.model.cardCategory) < 0)
-                isSelectable = false;
+            if (cardCategory != null && System.Array.IndexOf(cardCategory, cardController.model.cardCategory) < 0)
+                continue;
             else if (cardAttribute != null && System.Array.IndexOf(cardAttribute, cardController.model.cardAttribute) < 0)
-                isSelectable = false;
+                continue;
             else if (minCost.HasValue && cardController.model.cost < minCost.Value)
-                isSelectable = false;
+                continue;
             else if (maxCost.HasValue && cardController.model.cost > maxCost.Value)
-                isSelectable = false;
+                continue;
             else if (listCost != null && System.Array.IndexOf(listCost, cardController.model.cost) < 0)
-                isSelectable = false;
+                continue;
             else if (minToughness.HasValue && cardController.model.toughness < minToughness.Value)
-                isSelectable = false;
+                continue;
             else if (maxToughness.HasValue && cardController.model.toughness > maxToughness.Value)
-                isSelectable = false;
+                continue;
             else if (minPower.HasValue && cardController.model.power < minPower.Value)
-                isSelectable = false;
+                continue;
             else if (maxPower.HasValue && cardController.model.power > maxPower.Value)
-                isSelectable = false;
+                continue;
             else if (minDevote.HasValue && cardController.model.devote < minDevote.Value)
-                isSelectable = false;
+                continue;
             else if (maxDevote.HasValue && cardController.model.devote > maxDevote.Value)
-                isSelectable = false;
+                continue;
             else if (minDamage.HasValue && cardController.model.damage < minDamage.Value)
-                isSelectable = false;
+                continue;
             else if (maxDamage.HasValue && cardController.model.damage > maxDamage.Value)
-                isSelectable = false;
+                continue;
             else if (canAttack.HasValue && cardController.model.canAttack != canAttack.Value)
-                isSelectable = false;
-            else if (playerCard.HasValue && cardController.model.PlayerCard != playerCard.Value)
-                isSelectable = false;
+                continue;
             else if (cardStain != null)
             {
                 bool stainMatch = false;
@@ -153,13 +169,13 @@ public partial class GameManager : MonoBehaviourPun
                     }
                 }
                 if (!stainMatch)
-                    isSelectable = false;
+                    continue;
             }
-            cardController.model.canUse = isSelectable;
-            if (highLight)
-                cardController.view.SetCanUsePanel(cardController.model.canUse);
+            selectedCards.Add(cardController);
         }
+        return selectedCards;
     }
+
     // カード選択メソッド
     public CardController SelectCard()
     {

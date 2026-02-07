@@ -673,6 +673,7 @@ public partial class GameManager : MonoBehaviourPun
         {
             Transform parentTransform = GetPlace(card.model.PlayerCard, placeName);
             card.transform.SetParent(parentTransform, false);
+            card.model.fieldPosition = placeName;
         }
     }
 
