@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Card162
   m_EditorClassIdentifier: 
   cardId: 162
-  name: 
+  name: "\u5371\u967A\u306A\u79D1\u5B66\u8005"
   cardCategory: 0
   cardAttribute: 5
   cardStains: 

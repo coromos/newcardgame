@@ -21,7 +21,7 @@ MonoBehaviour:
   cost: 9
   toughness: 66
   power: 0
-  devote: 0
+  devote: 6
   icon: {fileID: 6578550064220593906, guid: ddf3fbd4d0aeb13449295ae5c6218958, type: 3}
   earlier: 1
   interference: 0

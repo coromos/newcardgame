@@ -18,11 +18,11 @@ MonoBehaviour:
   cardAttribute: 2
   cardStains: 
   cardRarity: 2
-  cost: 10
+  cost: 4
   toughness: 0
   power: 0
   devote: 0
-  icon: {fileID: 0}
+  icon: {fileID: -3284462383598433561, guid: 6519e3fc4b0840b4ebc3b9a9500afbbd, type: 3}
   earlier: 0
   interference: 0
   stealth: 0

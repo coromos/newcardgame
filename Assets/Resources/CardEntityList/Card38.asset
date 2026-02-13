@@ -30,4 +30,4 @@ MonoBehaviour:
   flying: 0
   homeostasis: 0
   alone: 0
-  noaction: 0
+  noaction: 1

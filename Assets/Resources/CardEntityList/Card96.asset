@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Card96
   m_EditorClassIdentifier: 
   cardId: 96
-  name: 
+  name: "\u7D30\u83CC\u61F8\u6FC1\u6DB2"
   cardCategory: 1
   cardAttribute: 5
   cardStains: 
@@ -22,7 +22,7 @@ MonoBehaviour:
   toughness: 0
   power: 0
   devote: 0
-  icon: {fileID: 0}
+  icon: {fileID: -1026679761570534855, guid: 32fd9955399cd5f4ca3f63cf6d081a11, type: 3}
   earlier: 0
   interference: 0
   stealth: 0

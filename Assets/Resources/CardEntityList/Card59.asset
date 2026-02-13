@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardId: 59
   name: "\u7FFC\u306E\u7948\u308A"
-  cardCategory: 0
+  cardCategory: 1
   cardAttribute: 3
   cardStains: 
   cardRarity: 2

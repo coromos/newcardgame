@@ -17,11 +17,12 @@ MonoBehaviour:
   cardCategory: 1
   cardAttribute: 0
   cardStains: 
+  cardRarity: 0
   cost: 6
   toughness: 0
   power: 0
   devote: 0
-  icon: {fileID: -4751826239678004093, guid: 6e5425fc7ce571f4387a3e490eefaf6f, type: 3}
+  icon: {fileID: -3713016859276557498, guid: 4a3461822ca7bd54a9eaaf4188c0f2d3, type: 3}
   earlier: 0
   interference: 0
   stealth: 0

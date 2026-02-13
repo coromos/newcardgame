@@ -16,7 +16,7 @@ MonoBehaviour:
   name: "\u706B\u87FB"
   cardCategory: 1
   cardAttribute: 1
-  cardStains: 
+  cardStains: 01000000
   cardRarity: 0
   cost: 4
   toughness: 4

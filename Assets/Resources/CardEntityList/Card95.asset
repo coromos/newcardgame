@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Card95
   m_EditorClassIdentifier: 
   cardId: 95
-  name: 
-  cardCategory: 0
+  name: "\u5F31\u83CC\u7E41\u6B96"
+  cardCategory: 1
   cardAttribute: 5
   cardStains: 
   cardRarity: 2
@@ -22,7 +22,7 @@ MonoBehaviour:
   toughness: 0
   power: 0
   devote: 0
-  icon: {fileID: 0}
+  icon: {fileID: 5522797791758287771, guid: 917d8eb62d63dc249be141e0af54fede, type: 3}
   earlier: 0
   interference: 0
   stealth: 0

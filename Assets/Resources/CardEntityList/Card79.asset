@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Card79
   m_EditorClassIdentifier: 
   cardId: 79
-  name: 
+  name: "\u5C16\u5854"
   cardCategory: 2
   cardAttribute: 4
   cardStains: 
@@ -22,7 +22,7 @@ MonoBehaviour:
   toughness: 28
   power: 0
   devote: 0
-  icon: {fileID: 0}
+  icon: {fileID: 3462883125474717462, guid: 66c9973d8a4585f41a4c99bd1cec5982, type: 3}
   earlier: 0
   interference: 0
   stealth: 0
