@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6efb885a318c914899ec07fef40f10c, type: 3}
+  m_Name: Card193
+  m_EditorClassIdentifier: 
+  cardId: 193
+  name: "\u5DEB\u89A1\u535C\u76F8\u796D\u7940"
+  cardCategory: 1
+  cardAttribute: 6
+  cardStains: 
+  cardRarity: 2
+  cost: 5
+  toughness: 0
+  power: 0
+  devote: 0
+  icon: {fileID: -8774311961771545818, guid: ca3adc4045085de4db77bb1b6c42d6be, type: 3}
+  earlier: 0
+  interference: 0
+  stealth: 0
+  strong: 0
+  flying: 0
+  homeostasis: 0
+  alone: 0
+  noaction: 0
