@@ -438,7 +438,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -4751826239678004093, guid: 452e74142665df545a66f4ea788ecc84, type: 3}
+  m_Sprite: {fileID: -3598721235499264479, guid: 8cede6238edd14245ad50f958e97ff96, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -648,7 +648,7 @@ MonoBehaviour:
   toughnessText: {fileID: 6657759625057952960}
   powerText: {fileID: 3317243242714988133}
   devoteText: {fileID: 6686857738188936191}
-  iconImage: {fileID: 8238971223699248517}
+  iconImage: {fileID: 0}
   canAttackPanel: {fileID: 47876186989105167}
   canUsePanel: {fileID: 47876186989105167}
 --- !u!114 &8449922025538972976

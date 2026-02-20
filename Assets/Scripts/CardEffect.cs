@@ -24,6 +24,25 @@ public enum CardEffectType
 
 public partial class GameManager : MonoBehaviourPun
 {
+    // 実行予定の効果呼び出し情報（FIFO 用キュー）
+    class EffectCall
+    {
+        public string MethodName;
+        public CardController Source;
+        public CardController Target;
+        public CardController RefCard;
+
+        public EffectCall(string methodName, CardController source, CardController target, CardController refCard)
+        {
+            MethodName = methodName;
+            Source = source;
+            Target = target;
+            RefCard = refCard;
+        }
+    }
+
+    // FIFO キュー（先入れ先出し）
+    private Queue<EffectCall> effectCallQueue = new Queue<EffectCall>();
 
     public void UseCardEffect(CardController mainCard, CardController refCard, CardEffectType type)
     {
@@ -34,7 +53,6 @@ public partial class GameManager : MonoBehaviourPun
         {
             CardController[] playerFieldCardList = playerField.GetComponentsInChildren<CardController>();
             CardController[] enemyFieldCardList = enemyField.GetComponentsInChildren<CardController>();
-            
 
             for (int i = 0; i < playerFieldCardList.Length; i++)
             {
@@ -59,6 +77,8 @@ public partial class GameManager : MonoBehaviourPun
             ApplyCardEffect(mainCard, mainCard, refCard, typeName);
         }
     }
+
+    // 即時実行は行わず、実行予定を FIFO キューへ追加する
     public void ApplyCardEffect(CardController effectSourceCard, CardController targetCard, CardController refCard, string typeName)
     {
         if (effectSourceCard == null)
@@ -66,18 +86,87 @@ public partial class GameManager : MonoBehaviourPun
 
         // カードIDとtypeNameから関数名を生成
         string methodName = typeName + effectSourceCard.model.cardId;
-        // リフレクションでGameManagerのメソッドを呼び出す
+
+        // メソッドが存在するかを確認してからキューに入れる
         var method = typeof(GameManager).GetMethod(methodName);
         if (method != null)
         {
-            method.Invoke(this, new object[] { effectSourceCard, targetCard, refCard });
+            effectCallQueue.Enqueue(new EffectCall(methodName, effectSourceCard, targetCard, refCard));
+        }
+        else
+        {
+            Debug.LogWarning($"Effect method not found: {methodName}");
         }
 
-        foreach (var addEffect in effectSourceCard.addEffectList)
+        // addEffectList に該当する追加効果もキューに入れる
+        if (effectSourceCard.addEffectList != null)
         {
-            if (addEffect.Contains(typeName))
+            foreach (var addEffect in effectSourceCard.addEffectList)
             {
-                typeof(GameManager).GetMethod(methodName).Invoke(this, new object[] {effectSourceCard, targetCard, refCard });
+                if (addEffect.Contains(typeName))
+                {
+                    // 追加効果用のメソッド名は同一（既存コードに準拠）
+                    var addMethod = typeof(GameManager).GetMethod(methodName);
+                    if (addMethod != null)
+                    {
+                        effectCallQueue.Enqueue(new EffectCall(methodName, effectSourceCard, targetCard, refCard));
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"AddEffect method not found: {methodName}");
+                    }
+                }
+            }
+        }
+    }
+
+    // キューから1件だけ実行（FIFO）
+    public void ProcessEffectQueueOne()
+    {
+        if (effectCallQueue.Count == 0)
+            return;
+
+        var call = effectCallQueue.Dequeue();
+        var method = typeof(GameManager).GetMethod(call.MethodName);
+        if (method != null)
+        {
+            try
+            {
+                method.Invoke(this, new object[] { call.Source, call.Target, call.RefCard });
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error invoking effect {call.MethodName}: {ex}");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"ProcessEffectQueueOne: method not found {call.MethodName}");
+        }
+    }
+
+    // キュー内をすべて実行（FIFO）
+    public void ProcessEffectQueueAll()
+    {
+        while (effectCallQueue.Count > 0)
+        {
+            ProcessEffectQueueOne();
+        }
+    }
+
+    // コルーチンで間隔をあけて処理（必要なら使用）
+    public IEnumerator ProcessEffectQueueCoroutine(float delayBetween = 0f)
+    {
+        while (effectCallQueue.Count > 0)
+        {
+            ProcessEffectQueueOne();
+            if (delayBetween > 0f)
+            {
+                yield return new WaitForSeconds(delayBetween);
+            }
+            else
+            {
+                yield return null;
             }
         }
     }
@@ -98,7 +187,7 @@ public partial class GameManager : MonoBehaviourPun
         int placeNum = MyCards.Length;
         for (int i = 0; i < placeNum; i++)
         {
-            transform = GetPace(MyCards[i], cardPlaces[i]);
+            transform = GetPlace(MyCards[i], cardPlaces[i]);
             baseCardList.AddRange(transform.GetComponentsInChildren<CardController>());
         }
 
