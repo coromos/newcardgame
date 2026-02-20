@@ -18,7 +18,7 @@ MonoBehaviour:
   cardAttribute: 5
   cardStains: 
   cardRarity: 1
-  cost: 7
+  cost: 5
   toughness: 0
   power: 0
   devote: 0
