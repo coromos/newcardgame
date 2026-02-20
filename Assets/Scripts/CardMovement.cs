@@ -5,7 +5,9 @@ using UnityEngine.EventSystems;
 using DG.Tweening;
 
 // カードのドラッグ・移動・アニメーションを管理するクラス
-public class CardMovement : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
+public class CardMovement : MonoBehaviour, 
+    IDragHandler, IBeginDragHandler, IEndDragHandler,
+    IPointerEnterHandler, IPointerExitHandler
 {
     public Vector3 position;
     public Transform cardParent; // ドラッグ前の親Transform
@@ -19,9 +21,9 @@ public class CardMovement : MonoBehaviour, IDragHandler, IBeginDragHandler, IEnd
         canDrag = true;
 
         // フィールド上のカードは攻撃可能な場合のみドラッグ可能
-        if (card.model.onField)
+        if (card.model.fieldPosition.Equals(PlaceList.Field.ToString()))
         {
-            if (!(card.model.canAttack && card.model.canUse))
+            if (!(card.model.canAttack && card.model.noaction))
             {
                 canDrag = false;
             }
@@ -45,7 +47,7 @@ public class CardMovement : MonoBehaviour, IDragHandler, IBeginDragHandler, IEnd
         position = transform.position;
         GetComponent<CanvasGroup>().blocksRaycasts = false;
 
-        if (!card.model.onField)
+        if (!card.model.fieldPosition.Equals(PlaceList.Field.ToString()))
             UIManager.instance.SetUseGracePanel(true);
     }
 
@@ -69,7 +71,7 @@ public class CardMovement : MonoBehaviour, IDragHandler, IBeginDragHandler, IEnd
         }
 
         // 元の親Transformに戻す
-        if (card.model.canUse || card.model.onField)
+        if (card.model.canUse || card.model.fieldPosition.Equals(PlaceList.Field.ToString()))
             transform.position = position;
         GetComponent<CanvasGroup>().blocksRaycasts = true;
 
@@ -97,17 +99,15 @@ public class CardMovement : MonoBehaviour, IDragHandler, IBeginDragHandler, IEnd
     }
 
     // マウスオーバー時の拡大表示
-    public void OnMouseEnter()
+    public void OnPointerEnter(PointerEventData eventData)
     {
-        Debug.Log("In");
         Vector3 enpow = new Vector3(1.2f, 1.2f, 1f);
         transform.DOScale(enpow, 0.1f);
     }
 
     // マウスアウト時の縮小表示
-    public void OnMouseExit()
+    public void OnPointerExit(PointerEventData eventData)
     {
-        Debug.Log("Out");
         Vector3 defaultscale = new Vector3(1f, 1f, 1f);
         transform.DOScale(defaultscale, 0.1f);
     }

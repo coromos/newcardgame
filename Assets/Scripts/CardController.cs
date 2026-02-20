@@ -20,10 +20,10 @@ public class CardController : MonoBehaviourPun
     }
 
     // カードの初期化（データと見た目のセットアップ）
-    public void Init(int cardID, bool playerCard, int cardIns) 
+    public void Init(int cardID, bool playerCard, int cardIns, string fieldPosition = "Deck")
     {
         cardInsID = cardIns;
-        model = new CardModel(cardID, playerCard);
+        model = new CardModel(cardID, playerCard, fieldPosition);
         view.Show(model);
     }
 
@@ -54,9 +54,9 @@ public class CardController : MonoBehaviourPun
     // カードをフィールドに配置した時の処理
     public void DropField()
     {
-        model.onField = true;
-        model.canUse = model.earlier;
-        view.SetCanUsePanel(model.canUse);
+        model.fieldPosition = "Field";
+        model.canAttack = model.earlier;
+        view.SetCanUsePanel(model.canAttack);
     }
 
     // Graceカードの使用処理

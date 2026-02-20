@@ -26,7 +26,9 @@ public partial class GameManager : MonoBehaviourPun
     [SerializeField] Text playerTreeText, enemyTreeText;
 
     public bool isPlayerTurn = false; //
-    List<int> deck = new List<int>() { 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3 };  //
+    //List<int> deck = new List<int>() { 4, 4, 4, 22, 22, 22, 29, 29, 29, 28, 28, 28, 26, 26, 26, 104, 104, 104, 21, 21, 21, 52, 52, 52, 38, 38, 38, 27, 27, 27 };  //
+                                                                                                                                                                  //
+    List<int> deck = new List<int>() { 4, 4, 4, 22, 22, 22, 29, 29, 29, 28, 28, 28, 26, 26, 26, 104, 104, 104, 21, 21, 21, 52, 52, 52, 38, 38, 38, 27, 27, 27 };  //
 
     public int playerLeaderHP;
     public int playerSeeds;
@@ -128,7 +130,7 @@ public partial class GameManager : MonoBehaviourPun
         if (gameStarted)
         {
             ShowSeed();
-            if (isPlayerTurn)
+            if (isPlayerTurn && !isSelectingCard)
             {
                 SetCanUsePanelHand();
             }
@@ -189,13 +191,13 @@ public partial class GameManager : MonoBehaviourPun
         if (setCardList != null && setCardList.Length > 0)
         {
             setCardList[0].transform.SetParent(parentTransform, false);
-            setCardList[0].Init(cardID, myCard, cardIns);
+            setCardList[0].Init(cardID, myCard, cardIns, placeName);
         }
         else
         {
             // カードを生成して親Transformの子に設定
             CardController newCard = Instantiate(cardPrefab, parentTransform);
-            newCard.Init(cardID, myCard, cardIns);
+            newCard.Init(cardID, myCard, cardIns, placeName);
         }
         
     }
@@ -270,7 +272,11 @@ public partial class GameManager : MonoBehaviourPun
     public void ChangeTurn()
     {
         //turn end script Want!!!!
-
+        if (!isPlayerTurn)
+        {
+            return;
+        }
+        TurnEnd();
         photonView.RPC("ChangeTurnRPC", RpcTarget.All, true);
     }
 
@@ -495,24 +501,18 @@ public partial class GameManager : MonoBehaviourPun
     }
 
     // フィールド上のカードの攻撃可能状態を設定
-    void SetAttackableFieldCard(CardController[] cardList, bool canUse)
+    void SetAttackableFieldCard(CardController[] cardList, bool canAttack)
     {
         foreach (CardController card in cardList)
         {
-            card.model.canUse = canUse;
-            card.view.SetCanAttackPanel(card.model.canAttack && canUse);
+            card.model.canAttack = canAttack;
+            card.view.SetCanAttackPanel(!card.model.noaction && canAttack);
         }
     }
 
     // リーダーへの攻撃処理
     public void Devote(CardController attackCard)
-    {
-        if (attackCard.model.canAttack == false)
-        {
-            return;
-        }
-
-        if (attackCard.model.PlayerCard == true) // プレイヤーカードの場合
+    {if (attackCard.model.PlayerCard == true) // プレイヤーカードの場合
         {
             Debug.Log(attackCard.model.name + "がリーダーに奉納");
             CreateThrift(attackCard.model.devote, true);
@@ -545,6 +545,11 @@ public partial class GameManager : MonoBehaviourPun
 
     public void CallDevote(CardController attackCard)
     {
+        if (attackCard.model.canAttack == false)
+        {
+            return;
+        }
+
         photonView.RPC("DevoteRPC", RpcTarget.All, attackCard.cardInsID);
     }
 
@@ -670,6 +675,7 @@ public partial class GameManager : MonoBehaviourPun
         {
             Transform parentTransform = GetPlace(card.model.PlayerCard, placeName);
             card.transform.SetParent(parentTransform, false);
+            card.model.fieldPosition = placeName;
         }
     }
 
@@ -709,5 +715,18 @@ public partial class GameManager : MonoBehaviourPun
             }
         }
         return null;
+    }
+
+    // ターン開始時処理
+    // 
+
+
+    // ターン終了時処理
+    // 毒処理
+    // カードのターン終了時処理
+    // 一時バフのリセット
+    void TurnEnd()
+    {
+
     }
 }

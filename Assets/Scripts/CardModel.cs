@@ -25,8 +25,8 @@ public class CardModel
 
     // 状態管理
     public bool canUse = false;
-    public bool onField = false;
-    public bool canAttack = true;
+    public string fieldPosition = "Deck"; // Deck, Hand, Field, Graveyard, Exile
+    public bool canAttack = false;
     public bool PlayerCard = true;
 
     // 初期能力
@@ -46,13 +46,19 @@ public class CardModel
     public int flnToughness = 0;
     public int flnPower = 0;
     public int flnDevote = 0;
+    public int tmpCost = 0;
+    public int tmpToughness = 0;
+    public int tmpPower = 0;
+    public int tmpDevote = 0;
     public int damage = 0;
-    public int stayturn = 0;
-    public int Curse = -1;
-    public int Poison = 0;
+    public int stayturn = 0;// スタン(攻撃・捧身・【妨害】ができない状態)のターン数
+    public int Curse = -1;// -1は呪いなし、0以上は呪いのターン数
+    public int Poison = 0;// 毒のカウンター数
+    public int vulnerable = 0;// 脆弱のターン数
+    public int frail = 0;// 虚弱のターン数
 
     // コンストラクタ：ScriptableObjectからデータを取得
-    public CardModel(int cardID, bool playerCard)
+    public CardModel(int cardID, bool playerCard, string FieldPosition)
     {
         CardEntity cardEntity = Resources.Load<CardEntity>("CardEntityList/Card" + cardID);
 
@@ -87,5 +93,6 @@ public class CardModel
         noaction = cardEntity.noaction;
 
         PlayerCard = playerCard;
+        fieldPosition = FieldPosition;
     }
 }
