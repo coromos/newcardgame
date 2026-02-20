@@ -644,7 +644,7 @@ MonoBehaviour:
   toughnessText: {fileID: 6657759625057952960}
   powerText: {fileID: 3317243242714988133}
   devoteText: {fileID: 6686857738188936191}
-  iconImage: {fileID: 0}
+  iconImage: {fileID: 8238971223699248517}
   canAttackPanel: {fileID: 47876186989105167}
   canUsePanel: {fileID: 47876186989105167}
 --- !u!114 &8449922025538972976
