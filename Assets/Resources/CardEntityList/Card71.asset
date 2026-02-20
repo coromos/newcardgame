@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardId: 71
   name: "\u9632\u885B\u30ED\u30DC\u30C3\u30C8"
-  cardCategory: 1
+  cardCategory: 0
   cardAttribute: 4
   cardStains: 
   cardRarity: 4
@@ -22,7 +22,7 @@ MonoBehaviour:
   toughness: 10
   power: 4
   devote: 0
-  icon: {fileID: 0}
+  icon: {fileID: 5614512701638432174, guid: c01c24ba386b40c4d9b5a9e53516bb65, type: 3}
   earlier: 0
   interference: 1
   stealth: 0

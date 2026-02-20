@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Card36
   m_EditorClassIdentifier: 
   cardId: 36
-  name: "\u5927\u304D\u304F\u306A\u3063\u305F\u6050\u7ADC"
+  name: "\u767D\u4E9C\u306E\u6050\u7ADC"
   cardCategory: 0
   cardAttribute: 2
   cardStains: 02000000
@@ -22,7 +22,7 @@ MonoBehaviour:
   toughness: 53
   power: 0
   devote: 0
-  icon: {fileID: -4751826239678004093, guid: 6e5425fc7ce571f4387a3e490eefaf6f, type: 3}
+  icon: {fileID: 1367307031862341836, guid: 4915162c7a6af814584d1c9fb271eb89, type: 3}
   earlier: 0
   interference: 0
   stealth: 0

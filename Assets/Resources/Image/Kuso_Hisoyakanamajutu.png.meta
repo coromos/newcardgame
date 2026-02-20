@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 3780ab6879109e64ebfeb75dc4447fa2
+guid: ac0251df2c1d42a4ab0bf5449836494a
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 4465262579690441637
-    second: Jinti_tmp_0
+      213: -5027155645140460312
+    second: Kuso_Hisoyakanamajutu_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,7 +100,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Jinti_tmp_0
+      name: Kuso_Hisoyakanamajutu_0
       rect:
         serializedVersion: 2
         x: 0
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5ab0b4388acc7fd30800000000000000
-      internalID: 4465262579690441637
+      spriteID: 8ec9dc46394fb3ab0800000000000000
+      internalID: -5027155645140460312
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Jinti_tmp_0: 4465262579690441637
+      Kuso_Hisoyakanamajutu_0: -5027155645140460312
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

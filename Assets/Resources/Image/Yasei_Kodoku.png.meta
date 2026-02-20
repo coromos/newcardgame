@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 7df31ae8afb43e049b6e5fa244829a3e
+guid: 28022daf8f5f36f46ac3d77e8267975f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4549386364885345876
-    second: Kozo_tmp_0
+      213: -7275435723920414084
+    second: Yasei_Kodoku_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,7 +100,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Kozo_tmp_0
+      name: Yasei_Kodoku_0
       rect:
         serializedVersion: 2
         x: 0
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ca9d00f64355dd0c0800000000000000
-      internalID: -4549386364885345876
+      spriteID: c7a698981c5780b90800000000000000
+      internalID: -7275435723920414084
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Kozo_tmp_0: -4549386364885345876
+      Yasei_Kodoku_0: -7275435723920414084
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

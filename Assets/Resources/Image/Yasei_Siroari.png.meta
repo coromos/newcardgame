@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: c4d656986030b1a4e95570434f9f3933
+guid: 9e5f6b1c7183058469b279f70355710b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7978999752695525836
-    second: Yasei_Kemononosoja_0
+      213: 8757455812104879967
+    second: Yasei_Siroari_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,7 +100,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Yasei_Kemononosoja_0
+      name: Yasei_Siroari_0
       rect:
         serializedVersion: 2
         x: 0
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 43e47addff5e44190800000000000000
-      internalID: -7978999752695525836
+      spriteID: f5ff0b089abb88970800000000000000
+      internalID: 8757455812104879967
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Yasei_Kemononosoja_0: -7978999752695525836
+      Yasei_Siroari_0: 8757455812104879967
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

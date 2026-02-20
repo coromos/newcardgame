@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 48e4c75687934c54186c8126a1bc1266
+guid: f8209f55c7663594593a06a7dac277cd
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 2203592855145776865
-    second: Kuso_tmp_0
+      213: 4875638820792466310
+    second: Mumei_Jipusi_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,7 +100,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Kuso_tmp_0
+      name: Mumei_Jipusi_0
       rect:
         serializedVersion: 2
         x: 0
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1e68d80d60cb49e10800000000000000
-      internalID: 2203592855145776865
+      spriteID: 68b707edcafb9a340800000000000000
+      internalID: 4875638820792466310
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Kuso_tmp_0: 2203592855145776865
+      Mumei_Jipusi_0: 4875638820792466310
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

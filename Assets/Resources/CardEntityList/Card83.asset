@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: Card83
   m_EditorClassIdentifier: 
   cardId: 83
-  name: 
+  name: "\u731B\u308B\u611F\u67D3\u4F53"
   cardCategory: 0
   cardAttribute: 5
-  cardStains: 
+  cardStains: 04000000
   cardRarity: 2
   cost: 2
   toughness: 10
   power: 15
   devote: 0
-  icon: {fileID: 0}
+  icon: {fileID: -135651018942770868, guid: 914d8564161900c4a81d2f1970b8a08f, type: 3}
   earlier: 1
   interference: 0
   stealth: 0

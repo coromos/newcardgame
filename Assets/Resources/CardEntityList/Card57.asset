@@ -17,7 +17,7 @@ MonoBehaviour:
   cardCategory: 1
   cardAttribute: 3
   cardStains: 
-  cardRarity: 3
+  cardRarity: 2
   cost: 2
   toughness: 0
   power: 0

@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: Card73
   m_EditorClassIdentifier: 
   cardId: 73
-  name: "\u9632\u885B\u30B7\u30B9\u30C6\u30E0\u30FB\u5FAE"
+  name: "\u9632\u885B\u30B7\u30B9\u30C6\u30E0"
   cardCategory: 1
   cardAttribute: 4
   cardStains: 
   cardRarity: 2
-  cost: 2
+  cost: 3
   toughness: 0
   power: 0
   devote: 0
-  icon: {fileID: 0}
+  icon: {fileID: -4894466344215683751, guid: 94d1eebd89b6122478f7eaf80d21c6eb, type: 3}
   earlier: 0
   interference: 0
   stealth: 0

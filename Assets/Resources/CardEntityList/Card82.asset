@@ -16,13 +16,13 @@ MonoBehaviour:
   name: "\u75C5\u306E\u7D42\u7184\u8005"
   cardCategory: 0
   cardAttribute: 5
-  cardStains: 00000000
+  cardStains: 04000000
   cardRarity: 1
   cost: 6
-  toughness: 43
+  toughness: 49
   power: 2
   devote: 0
-  icon: {fileID: 0}
+  icon: {fileID: -8198858776778604400, guid: 3bb01a7d0d9be1343845b1e986e68d6c, type: 3}
   earlier: 0
   interference: 0
   stealth: 0
