@@ -23,7 +23,7 @@ public class CardMovement : MonoBehaviour,
         // フィールド上のカードは攻撃可能な場合のみドラッグ可能
         if (card.model.fieldPosition.Equals(PlaceList.Field.ToString()))
         {
-            if (!(card.model.canAttack && card.model.noaction))
+            if (!(card.model.canAttack && !card.model.noaction))
             {
                 canDrag = false;
             }
