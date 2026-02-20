@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c6efb885a318c914899ec07fef40f10c, type: 3}
-  m_Name: Card27
+  m_Name: Card205
   m_EditorClassIdentifier: 
-  cardId: 27
-  name: "\u30D0\u30F3\u30D3"
+  cardId: 205
+  name: "\u30C9\u30AF\u30CC\u30EA"
   cardCategory: 0
-  cardAttribute: 1
+  cardAttribute: 5
   cardStains: 
-  cardRarity: 3
+  cardRarity: 1
   cost: 4
-  toughness: 27
-  power: 10
-  devote: 17
-  icon: {fileID: 4924548383439937199, guid: 7f04eeb559da79e47815d81dea3b24ff, type: 3}
+  toughness: 38
+  power: 1
+  devote: 0
+  icon: {fileID: 0}
   earlier: 0
   interference: 0
   stealth: 0
