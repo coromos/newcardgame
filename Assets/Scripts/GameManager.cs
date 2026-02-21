@@ -28,7 +28,7 @@ public partial class GameManager : MonoBehaviourPun
     public bool isPlayerTurn = false; //
     //List<int> deck = new List<int>() { 4, 4, 4, 22, 22, 22, 29, 29, 29, 28, 28, 28, 26, 26, 26, 104, 104, 104, 21, 21, 21, 52, 52, 52, 38, 38, 38, 27, 27, 27 };  //
                                                                                                                                                                   //
-    List<int> deck = new List<int>() { 4, 4, 4, 22, 22, 22, 29, 29, 29, 28, 28, 28, 26, 26, 26, 104, 104, 104, 21, 21, 21, 52, 52, 52, 38, 38, 38, 27, 27, 27 };  //
+    List<int> deck = new List<int>() { 1, 1, 1, 142, 142, 142, 147, 147, 147, 93, 93, 144, 144, 144, 26, 115, 115, 115, 135, 135, 135, 68, 68, 68, 195, 195, 195, 124, 124, 124 };  //
 
     public int playerLeaderHP;
     public int playerSeeds;
