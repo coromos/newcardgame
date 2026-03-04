@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 4ad365b6aca75214cb4b977895837521
+guid: 6c45bc7388f1754498c7cbfdcf5aef49
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8979906664605949414
-    second: Jinti_Kemosya_0
+      213: -9134359712370641421
+    second: Jinti_Jidainokemosya_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,7 +100,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Jinti_Kemosya_0
+      name: Jinti_Jidainokemosya_0
       rect:
         serializedVersion: 2
         x: 0
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a12eff35776f06380800000000000000
-      internalID: -8979906664605949414
+      spriteID: 3f5328dcc3c3c3180800000000000000
+      internalID: -9134359712370641421
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Jinti_Kemosya_0: -8979906664605949414
+      Jinti_Jidainokemosya_0: -9134359712370641421
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

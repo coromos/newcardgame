@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Card176
   m_EditorClassIdentifier: 
   cardId: 176
-  name: "\u5553\u8499\u8005"
+  name: "\u6642\u4EE3\u306E\u5553\u8499\u8005"
   cardCategory: 0
   cardAttribute: 0
   cardStains: 
@@ -22,7 +22,7 @@ MonoBehaviour:
   toughness: 30
   power: 15
   devote: 10
-  icon: {fileID: -8979906664605949414, guid: 4ad365b6aca75214cb4b977895837521, type: 3}
+  icon: {fileID: -9134359712370641421, guid: 6c45bc7388f1754498c7cbfdcf5aef49, type: 3}
   earlier: 0
   interference: 0
   stealth: 0
