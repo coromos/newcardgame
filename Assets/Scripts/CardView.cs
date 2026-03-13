@@ -31,4 +31,11 @@ public class CardView : MonoBehaviour
     {
         canUsePanel.SetActive(flag);
     }
+
+    // 選択可能パネルの表示切替
+    public void SetCanSelectPanel(bool flag)
+    {
+        // ここではcanUsePanelを流用して選択可能状態を表現する
+        canUsePanel.SetActive(flag);
+    }
 }

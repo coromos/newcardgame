@@ -26,5 +26,10 @@ public class CardEntity : ScriptableObject
     public bool flying = false;//妨害の効果を受けない
     public bool homeostasis = false;//状態異常無効
     public bool alone = false;//孤立
-    public bool noaction = false;//攻撃・捧身不可
+    public bool noaction = false;//攻撃不可
+    public bool nodevote = false;//捧身不可
+
+    // ダメージ増減の効果
+    public int aplDmg = 0;//このカードがダメージを与えるときの増減
+    public int recDmg = 0;//このカードがダメージを受けるときの増減
 }

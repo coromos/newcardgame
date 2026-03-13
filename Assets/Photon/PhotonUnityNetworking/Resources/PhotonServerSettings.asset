@@ -60,6 +60,8 @@ MonoBehaviour:
   - CallAddSeedsRPC
   - DevoteToLeaderRPC
   - DevoteRPC
+  - RPC_ApplyBuffToCard
+  - RPC_ApplyDamageToCard
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

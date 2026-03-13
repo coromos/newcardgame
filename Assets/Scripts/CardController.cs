@@ -10,6 +10,7 @@ public class CardController : MonoBehaviourPun
     public CardModel model; // カードのデータを管理
     public CardMovement movement;  // カードの移動・ドラッグ操作を管理
     public List<string> addEffectList = new List<string>(); // 追加のカード効果を収めるリスト
+    public CardEffectManager cem; // カード効果の管理クラスへの参照
     public int cardInsID;
 
     // コンポーネントの初期化
@@ -23,8 +24,20 @@ public class CardController : MonoBehaviourPun
     public void Init(int cardID, bool playerCard, int cardIns, string fieldPosition = "Deck")
     {
         cardInsID = cardIns;
+
         model = new CardModel(cardID, playerCard, fieldPosition);
-        view.Show(model);
+
+        System.Type type = System.Type.GetType("CEM" + cardID);
+        if (type != null)
+        {
+            cem = System.Activator.CreateInstance(type) as CardEffectManager;
+        }
+        else
+        {
+            cem = new CardEffectManager();
+        }
+
+            view.Show(model);
     }
 
     // カードにダメージを与える

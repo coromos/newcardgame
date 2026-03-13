@@ -20,9 +20,11 @@ public class AttackedCard : MonoBehaviour, IDropHandler, IPointerClickHandler
     //　カード選択モード時にクリックされた場合の処理
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (GameManager.instance.isSelectingCard)
+        CardController card = GetComponent<CardController>();
+
+        if (card.model.canSelect)
         {
-            GameManager.instance.SetSelectedCard(GetComponent<CardController>());
+            GameManager.instance.SetSelectedCard(card);
         }
     }
 }

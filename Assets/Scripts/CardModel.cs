@@ -28,6 +28,7 @@ public class CardModel
     public string fieldPosition = "Deck"; // Deck, Hand, Field, Graveyard, Exile
     public bool canAttack = false;
     public bool PlayerCard = true;
+    public bool canSelect = false;
 
     // 初期能力
     public bool earlier = false;
@@ -57,9 +58,13 @@ public class CardModel
     public int vulnerable = 0;// 脆弱のターン数
     public int frail = 0;// 虚弱のターン数
 
+    public int aplDmg = 0;//このカードがダメージを与えるときの増減
+    public int recDmg = 0;//このカードがダメージを受けるときの増減
+
     // コンストラクタ：ScriptableObjectからデータを取得
     public CardModel(int cardID, bool playerCard, string FieldPosition)
     {
+
         CardEntity cardEntity = Resources.Load<CardEntity>("CardEntityList/Card" + cardID);
 
         if (cardEntity == null)
@@ -92,7 +97,12 @@ public class CardModel
         alone = cardEntity.alone;
         noaction = cardEntity.noaction;
 
+        aplDmg = cardEntity.aplDmg;
+        recDmg = cardEntity.recDmg;
+
         PlayerCard = playerCard;
         fieldPosition = FieldPosition;
+
+        Resources.UnloadAsset(cardEntity);
     }
 }

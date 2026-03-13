@@ -28,7 +28,7 @@ public partial class GameManager : MonoBehaviourPun
     public bool isPlayerTurn = false; //
     //List<int> deck = new List<int>() { 4, 4, 4, 22, 22, 22, 29, 29, 29, 28, 28, 28, 26, 26, 26, 104, 104, 104, 21, 21, 21, 52, 52, 52, 38, 38, 38, 27, 27, 27 };  //
                                                                                                                                                                   //
-    List<int> deck = new List<int>() { 4, 4, 4, 22, 22, 22, 29, 29, 29, 28, 28, 28, 26, 26, 26, 104, 104, 104, 21, 21, 21, 52, 52, 52, 38, 38, 38, 27, 27, 27 };  //
+    List<int> deck;
 
     public int playerLeaderHP;
     public int playerSeeds;
@@ -153,6 +153,16 @@ public partial class GameManager : MonoBehaviourPun
         enemyLeaderHP = 0;
         playerLeaderHP = 0;
 
+        // デッキを初期化
+        DeckEntity[] deckEntities = Resources.LoadAll<DeckEntity>("Decks");
+        for(int i = 0; i < deckEntities.Length; i++)
+        {
+            if (deckEntities[i].useDeck)
+            {
+                deck = new List<int>(deckEntities[i].cardIds);
+                break;
+            }
+        }
         // デッキをシャッフル
         deck = deck.OrderBy(x => Guid.NewGuid()).ToList();
         for (int i = 0; i < deck.Count; i++)
@@ -203,7 +213,7 @@ public partial class GameManager : MonoBehaviourPun
     }
 
     // DrawCardを全員に通知
-    void CallDrawCard(bool mine)
+    public void CallDrawCard(bool mine)
     {
         photonView.RPC("CallDrawCardRPC", RpcTarget.All, mine);
     }
@@ -470,7 +480,7 @@ public partial class GameManager : MonoBehaviourPun
     // カード同士のバトル処理
     public void CardBattle(CardController attackCard, CardController defenceCard)
     {
-        if (attackCard.model.canAttack == true
+        if (attackCard.model.canAttack == true && attackCard.model.noaction == false
             && attackCard.model.PlayerCard != defenceCard.model.PlayerCard)
         {
             photonView.RPC("CardBattleRPC", RpcTarget.All, attackCard.cardInsID, defenceCard.cardInsID);
@@ -559,12 +569,12 @@ public partial class GameManager : MonoBehaviourPun
         if (Myleader)
         {
             playerLeaderHP += devote;
-            Debug.Log("自分のHPは" + playerLeaderHP);
+            Debug.Log("自分の繁栄は" + playerLeaderHP);
         }
         else
         {
             enemyLeaderHP += devote;
-            Debug.Log("敵のHPは" + enemyLeaderHP);
+            Debug.Log("敵の繁栄は" + enemyLeaderHP);
         }
     }
 
@@ -707,11 +717,11 @@ public partial class GameManager : MonoBehaviourPun
     public CardController FindCardByInstanceID(int instanceId)
     {
         CardController[] allCards = FindObjectsByType<CardController>(FindObjectsSortMode.None);
-        foreach (CardController card in allCards)
+        for(int i = 0; i < allCards.Length; i++)
         {
-            if (card.cardInsID == instanceId)
+            if (allCards[i].cardInsID == instanceId)
             {
-                return card;
+                return allCards[i];
             }
         }
         return null;

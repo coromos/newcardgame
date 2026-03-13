@@ -22,182 +22,34 @@ public enum CardEffectType
     AnyGrace,
 }
 
-public partial class GameManager : MonoBehaviourPun
+// カード効果の処理を管理する汎用クラス
+public abstract class CardEffect
 {
-    // 実行予定の効果呼び出し情報（FIFO 用キュー）
-    class EffectCall
-    {
-        public string MethodName;
-        public CardController Source;
-        public CardController Target;
-        public CardController RefCard;
+    public CardController CSource;
+    public CardController CTarget;
+    public CardController CRef;
 
-        public EffectCall(string methodName, CardController source, CardController target, CardController refCard)
-        {
-            MethodName = methodName;
-            Source = source;
-            Target = target;
-            RefCard = refCard;
-        }
+    public CardEffect(CardController source)
+    {
+        CSource = source;
     }
 
-    // FIFO キュー（先入れ先出し）
-    private Queue<EffectCall> effectCallQueue = new Queue<EffectCall>();
-
-    public void UseCardEffect(CardController mainCard, CardController refCard, CardEffectType type)
+    // 効果関連カードをセットするメソッド
+    public void SetRefCards(CardController target = null, CardController reference = null)
     {
-        string typeName = type.ToString();
-
-        // Anyが付いている場合の処理
-        if (typeName.StartsWith("Any"))
-        {
-            CardController[] playerFieldCardList = playerField.GetComponentsInChildren<CardController>();
-            CardController[] enemyFieldCardList = enemyField.GetComponentsInChildren<CardController>();
-
-            for (int i = 0; i < playerFieldCardList.Length; i++)
-            {
-                CardController sourceCard = playerFieldCardList[i];
-                if (sourceCard != null && sourceCard.gameObject != null)
-                {
-                    ApplyCardEffect(sourceCard, mainCard, refCard, typeName);
-                }
-            }
-
-            for (int i = 0; i < enemyFieldCardList.Length; ++i)
-            {
-                CardController sourceCard = enemyFieldCardList[i];
-                if (sourceCard != null && sourceCard.gameObject != null)
-                {
-                    ApplyCardEffect(sourceCard, mainCard, refCard, typeName);
-                }
-            }
-        }
-        else
-        {
-            ApplyCardEffect(mainCard, mainCard, refCard, typeName);
-        }
+        CTarget = target;
+        CRef = reference;
     }
 
-    // 即時実行は行わず、実行予定を FIFO キューへ追加する
-    public void ApplyCardEffect(CardController effectSourceCard, CardController targetCard, CardController refCard, string typeName)
-    {
-        if (effectSourceCard == null)
-            return;
-
-        // カードIDとtypeNameから関数名を生成
-        string methodName = typeName + effectSourceCard.model.cardId;
-
-        // メソッドが存在するかを確認してからキューに入れる
-        var method = typeof(GameManager).GetMethod(methodName);
-        if (method != null)
-        {
-            effectCallQueue.Enqueue(new EffectCall(methodName, effectSourceCard, targetCard, refCard));
-        }
-        else
-        {
-            Debug.LogWarning($"Effect method not found: {methodName}");
-        }
-
-        // addEffectList に該当する追加効果もキューに入れる
-        if (effectSourceCard.addEffectList != null)
-        {
-            foreach (var addEffect in effectSourceCard.addEffectList)
-            {
-                if (addEffect.Contains(typeName))
-                {
-                    // 追加効果用のメソッド名は同一（既存コードに準拠）
-                    var addMethod = typeof(GameManager).GetMethod(methodName);
-                    if (addMethod != null)
-                    {
-                        effectCallQueue.Enqueue(new EffectCall(methodName, effectSourceCard, targetCard, refCard));
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"AddEffect method not found: {methodName}");
-                    }
-                }
-            }
-        }
-    }
-
-    // キューから1件だけ実行（FIFO）
-    public void ProcessEffectQueueOne()
-    {
-        if (effectCallQueue.Count == 0)
-            return;
-
-        var call = effectCallQueue.Dequeue();
-        var method = typeof(GameManager).GetMethod(call.MethodName);
-        if (method != null)
-        {
-            try
-            {
-                method.Invoke(this, new object[] { call.Source, call.Target, call.RefCard });
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error invoking effect {call.MethodName}: {ex}");
-            }
-        }
-        else
-        {
-            Debug.LogWarning($"ProcessEffectQueueOne: method not found {call.MethodName}");
-        }
-    }
-
-    // キュー内をすべて実行（FIFO）
-    public void ProcessEffectQueueAll()
-    {
-        while (effectCallQueue.Count > 0)
-        {
-            ProcessEffectQueueOne();
-        }
-    }
-
-    // コルーチンで間隔をあけて処理（必要なら使用）
-    public IEnumerator ProcessEffectQueueCoroutine(float delayBetween = 0f)
-    {
-        while (effectCallQueue.Count > 0)
-        {
-            ProcessEffectQueueOne();
-            if (delayBetween > 0f)
-            {
-                yield return new WaitForSeconds(delayBetween);
-            }
-            else
-            {
-                yield return null;
-            }
-        }
-    }
-
-    // カード選択機能用の変数
-    public bool isSelectingCard = false;
-    public CardController selectCard;
-
-    //カード選択用リスト取得メソッド
-    //引数で指定された場所のカードを取得する
-    public List<CardController> GetCardFromPlace(
-        bool[] MyCards,
-        string[] cardPlaces
-        )
-    {
-        Transform transform;
-        List<CardController> baseCardList = new List<CardController>();
-        int placeNum = MyCards.Length;
-        for (int i = 0; i < placeNum; i++)
-        {
-            transform = GetPlace(MyCards[i], cardPlaces[i]);
-            baseCardList.AddRange(transform.GetComponentsInChildren<CardController>());
-        }
-
-        return baseCardList;
-    }
+    // カード効果の発動
+    // ここではmethod名のみを指定して、実際の処理は継承クラスで実装する
+    public abstract void Activate();
 
     // カード限定メソッド
     // 引数のカードリストから他の条件でカードを絞り込む
-    public List<CardController> PickupCardForEffect(
+    public List<CardController> PickupCard(
         List<CardController> baseCardList,
+        string[] cardPlaces = null,
         CardCategory[] cardCategory = null,
         CardAttribute[] cardAttribute = null,
         CardStain[] cardStain = null,
@@ -218,7 +70,9 @@ public partial class GameManager : MonoBehaviourPun
         List<CardController> selectedCards = new List<CardController>();
         foreach (var cardController in baseCardList)
         {
-            if (cardCategory != null && System.Array.IndexOf(cardCategory, cardController.model.cardCategory) < 0)
+            if (cardPlaces != null && System.Array.IndexOf(cardPlaces, cardController.model.fieldPosition) < 0)
+                continue;
+            else if (cardCategory != null && System.Array.IndexOf(cardCategory, cardController.model.cardCategory) < 0)
                 continue;
             else if (cardAttribute != null && System.Array.IndexOf(cardAttribute, cardController.model.cardAttribute) < 0)
                 continue;
@@ -264,31 +118,69 @@ public partial class GameManager : MonoBehaviourPun
         }
         return selectedCards;
     }
+}
 
-    // カード選択メソッド
-    public CardController SelectCard()
+public abstract class CEDraw : CardEffect
+{
+    public int drawCount;
+
+    public CEDraw(CardController source) : base(source) { }
+    public override void Activate()
     {
-        isSelectingCard = true;
-        selectCard = null;
-        // カードが選択されるまで待機
-        while (isSelectingCard)
-        {
-            if (selectCard != null)
-            {
-                break;
-            }
-        }
-
-        return selectCard;
+        DrawCard(drawCount);
     }
 
-    // カードを外部から選択するためのメソッド
-    public void SetSelectedCard(CardController card)
+    private void DrawCard(int count)
     {
-        if (isSelectingCard)
+        // ドロー処理を実装
+        for (int i = 0; i < count; i++)
         {
-            selectCard = card;
-            isSelectingCard = false;
+            // プレイヤーのデッキからカードを引いて手札に加える処理を実装
+            GameManager.instance.CallDrawCard(CSource.model.PlayerCard);
+        }
+    }
+}
+
+public abstract class CEDamage : CardEffect
+{
+    public int damage;
+    public int cardAmount;
+    public CEDamage(CardController source) : base(source) { }
+    public override void Activate()
+    {
+        Damage(damage, cardAmount);
+    }
+    private void Damage(int dmg, int camt)
+    {
+        CardController[] allCards = UnityEngine.Object.FindObjectsByType<CardController>(FindObjectsSortMode.None);
+        List<CardController> selectableCards = PickupCard(allCards.ToList());
+        List<CardController> targetCards = GameManager.instance.StartCardSelection(selectableCards, camt);
+
+        for (int i = 0; i < targetCards.Count; i++)
+        {
+            GameManager.instance.CallDamageCard(targetCards[i], dmg);
+        }
+    }
+}
+
+public abstract class CEBuff : CardEffect
+{
+    public int[] buff;
+    public int cardAmount;
+    public CEBuff(CardController source) : base(source) { }
+    public override void Activate()
+    {
+        Buff(buff, cardAmount);
+    }
+
+    private void Buff(int[] buff, int camt)
+    {
+        CardController[] allCards = UnityEngine.Object.FindObjectsByType<CardController>(FindObjectsSortMode.None);
+        List<CardController> selectableCards = PickupCard(allCards.ToList());
+        List<CardController> targetCards = GameManager.instance.StartCardSelection(selectableCards, camt);
+        for (int i = 0; i < targetCards.Count; i++)
+        {
+            GameManager.instance.CallBuffCard(targetCards[i], buff[0], buff[1], buff[2]);
         }
     }
 }
