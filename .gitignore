@@ -101,3 +101,7 @@ InitTestScene*.unity*
 # ignore cache
 /**/ArtifactDB
 /**/SourceAssetDB
+
+# User Adds
+/Assets/Resources/Decks/
+!/Assets/Resources/Decks/.gitkeep
