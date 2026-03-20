@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 88e92dd6688dee24cbcbc95d67c57427
+guid: c78dc001e6e0f814eab9b40da33276a3
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2274807778492483900
-    second: Kuso_Shinpu_0
+      213: 2737657331284574799
+    second: Saikin_Syoennomaju_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,7 +100,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Kuso_Shinpu_0
+      name: Saikin_Syoennomaju_0
       rect:
         serializedVersion: 2
         x: 0
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4c6f8aeb0624e60e0800000000000000
-      internalID: -2274807778492483900
+      spriteID: f4206fb86dc1ef520800000000000000
+      internalID: 2737657331284574799
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Kuso_Shinpu_0: -2274807778492483900
+      Saikin_Syoennomaju_0: 2737657331284574799
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
