@@ -56,7 +56,7 @@ public partial class GameManager
         List<CardEffect> effects = effectSourceCard.cem.GetEffects(type);
         for (int i = 0; i < effects.Count; i++)
         {
-            effects[i].SetRefCards(targetCard, refCard);
+            effects[i].SetRefCards(effectSourceCard, targetCard, refCard);
             effectCallQueue.Enqueue(effects[i]);
         }
     }
