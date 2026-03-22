@@ -22,7 +22,7 @@ public class AttackedCard : MonoBehaviour, IDropHandler, IPointerClickHandler
     {
         CardController card = GetComponent<CardController>();
 
-        if (card.model.canSelect)
+        if (card.canSelect)
         {
             GameManager.instance.SetSelectedCard(card);
         }

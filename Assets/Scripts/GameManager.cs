@@ -24,6 +24,7 @@ public partial class GameManager : MonoBehaviourPun
     [SerializeField] Text playerLeaderHPText, enemyLeaderHPText;
     [SerializeField] Text playerSeedsText, enemySeedsText;
     [SerializeField] Text playerTreeText, enemyTreeText;
+    [SerializeField] GameObject NoCard;
 
     public bool isPlayerTurn = false; //
     //List<int> deck = new List<int>() { 4, 4, 4, 22, 22, 22, 29, 29, 29, 28, 28, 28, 26, 26, 26, 104, 104, 104, 21, 21, 21, 52, 52, 52, 38, 38, 38, 27, 27, 27 };  //
@@ -321,8 +322,9 @@ public partial class GameManager : MonoBehaviourPun
     {
         Debug.Log("Playerのターン");
 
-        CardController[] playerFieldCardList = playerField.GetComponentsInChildren<CardController>();
-        SetAttackableFieldCard(playerFieldCardList, true);
+        //CardController[] playerFieldCardList = playerField.GetComponentsInChildren<CardController>();
+        //SetAttackableFieldCard(playerFieldCardList, true);
+        CallSetAttackableFieldCard(true);
 
         // シードを加算
         CallAddSeeds(playerTree, true);
@@ -483,7 +485,18 @@ public partial class GameManager : MonoBehaviourPun
         if (attackCard.model.canAttack == true && attackCard.model.noaction == false
             && attackCard.model.PlayerCard != defenceCard.model.PlayerCard)
         {
-            photonView.RPC("CardBattleRPC", RpcTarget.All, attackCard.cardInsID, defenceCard.cardInsID);
+            photonView.RPC("SelectInterferenceRPC", RpcTarget.All);
+
+            if (selectedInterferenceCardID != 0)
+            {
+                photonView.RPC("CardBattleRPC", RpcTarget.All, attackCard.cardInsID, selectedInterferenceCardID);
+            }
+            else
+            {
+                photonView.RPC("CardBattleRPC", RpcTarget.All, attackCard.cardInsID, defenceCard.cardInsID);
+            }
+
+
         }
     }
 
@@ -510,6 +523,69 @@ public partial class GameManager : MonoBehaviourPun
         }
     }
 
+    // 【妨害】機能用のメソッド
+    // 妨害可能なカードを選択するためのRPC
+    [PunRPC]
+    public void SelectInterferenceRPC(PhotonMessageInfo info)
+    {
+        if (PhotonNetwork.LocalPlayer.ActorNumber == info.Sender.ActorNumber)
+        {
+            List<CardController> selectableCards = new List<CardController>(playerField.GetComponentsInChildren<CardController>());
+            selectableCards = selectableCards.Where(card => card.model.interference).ToList();
+
+            if (selectableCards.Count > 0)
+            {
+                List<CardController> selectedCards = StartCardSelection(selectableCards, 1);
+                selectedInterferenceCardID = selectedCards[0].cardInsID;
+            }
+            else
+            {
+                selectedInterferenceCardID = -1; // 妨害可能なカードがない場合は0をセット
+            }
+
+            photonView.RPC("CardBattleRPC", RpcTarget.All, selectableCards[0].cardInsID);
+            selectedInterferenceCardID = -1;
+        }
+        else
+        {
+            // 他プレイヤーは選択されたカードIDを待つ
+            while (selectedInterferenceCardID == -1)
+            {
+                // 待機
+            }
+        }
+    }
+
+    // 選択されたカードIDを共有する変数
+    int selectedInterferenceCardID = 0;
+    // 選択された【妨害】カードを通知するためのRPC
+    [PunRPC]
+    public void InterferenceRPC(int cardInsID, PhotonMessageInfo info)
+    {
+        selectedInterferenceCardID = cardInsID;
+    }
+
+    void CallSetAttackableFieldCard(bool canAttack)
+    {
+        photonView.RPC("SetAttackableFieldCardRPC", RpcTarget.All, canAttack);
+    }
+
+    [PunRPC]
+    void SetAttackableFieldCardRPC(bool canAttack, PhotonMessageInfo info)
+    {
+        bool mine = (PhotonNetwork.LocalPlayer.ActorNumber == info.Sender.ActorNumber);
+        CardController[] fieldCardList;
+        if (mine)
+        {
+            fieldCardList = playerField.GetComponentsInChildren<CardController>();
+        }
+        else
+        {
+            fieldCardList = enemyField.GetComponentsInChildren<CardController>();
+        }
+        SetAttackableFieldCard(fieldCardList, canAttack);
+    }
+
     // フィールド上のカードの攻撃可能状態を設定
     void SetAttackableFieldCard(CardController[] cardList, bool canAttack)
     {
@@ -517,6 +593,27 @@ public partial class GameManager : MonoBehaviourPun
         {
             card.model.canAttack = canAttack;
             card.view.SetCanAttackPanel(!card.model.noaction && canAttack);
+        }
+    }
+
+    public void CallDevote(CardController attackCard)
+    {
+        if (attackCard.model.canAttack == false)
+        {
+            return;
+        }
+
+        photonView.RPC("DevoteRPC", RpcTarget.All, attackCard.cardInsID);
+    }
+
+    //リーダーへの攻撃処理のRPC
+    [PunRPC]
+    public void DevoteRPC(int attackCardID)
+    {
+        CardController attackCard = FindCardByInstanceID(attackCardID);
+        if (attackCard != null)
+        {
+            Devote(attackCard);
         }
     }
 
@@ -540,27 +637,6 @@ public partial class GameManager : MonoBehaviourPun
         attackCard.GrantDamage(attackCard.model.devote);
         attackCard.DamageDestroy();
         ShowLeaderHP();
-    }
-
-    //リーダーへの攻撃処理のRPC
-    [PunRPC]
-    public void DevoteRPC(int attackCardID)
-    {
-        CardController attackCard = FindCardByInstanceID(attackCardID);
-        if (attackCard != null)
-        {
-            Devote(attackCard);
-        }
-    }
-
-    public void CallDevote(CardController attackCard)
-    {
-        if (attackCard.model.canAttack == false)
-        {
-            return;
-        }
-
-        photonView.RPC("DevoteRPC", RpcTarget.All, attackCard.cardInsID);
     }
 
     // リーダーのHPを加算

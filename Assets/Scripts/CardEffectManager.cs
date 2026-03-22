@@ -5,8 +5,8 @@ using UnityEngine;
 // シンプルな管理クラス。カードごとの効果を管理。
 public class CardEffectManager
 {
-    private List<CardEffect>[] buckets;
-
+    protected List<CardEffect>[] buckets;
+    
     public CardEffectManager()
     {
         int enumCount = Enum.GetValues(typeof(CardEffectType)).Length;

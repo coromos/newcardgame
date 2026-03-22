@@ -100,7 +100,10 @@ public partial class GameManager
     public bool isSelectingCard = false;
     public CardController SelectedCard;
 
-    // カード選択処理
+    // コルーチン用に選択結果を格納するフィールドを追加
+    public CardController SelectionResult;
+
+    // カード選択処理（クリックで SetSelectedCard を呼ぶ既存フローを利用）
     public void SetSelectedCard(CardController card)
     {
         if (isSelectingCard)
@@ -110,19 +113,64 @@ public partial class GameManager
         }
     }
 
-    // カード選択開始
-    public List<CardController> StartCardSelection(List<CardController> selectableCards, int selectCount=1)
+    // 既存のブロッキング版は残すが UI 用コルーチン版を追加（メインスレッドをブロックしない）
+    public IEnumerator StartCardSelectionCoroutine(List<CardController> selectableCards, int selectCount = 1)
     {
         isSelectingCard = true;
-        List<CardController> selectedCards = new List<CardController>();
+        SelectionResult = null;
+
         // 選択可能なカードに選択UIを表示
         foreach (CardController card in selectableCards)
         {
-            card.model.canSelect = true;
+            card.canSelect = true;
             card.view.SetCanUsePanel(false);
             card.view.SetCanAttackPanel(false);
             card.view.SetCanSelectPanel(true);
         }
+
+        // 選択されるのを待つ（非ブロッキング）
+        while (isSelectingCard)
+        {
+            if (SelectedCard != null)
+            {
+                SelectionResult = SelectedCard;
+                SelectedCard.view.SetCanSelectPanel(false);
+                SelectedCard = null;
+                // 単一選択前提のため選択が入ったら抜ける
+                isSelectingCard = false;
+            }
+            yield return null;
+        }
+
+        // 選択UIを非表示にする
+        foreach (CardController card in selectableCards)
+        {
+            card.canSelect = false;
+            card.view.SetCanSelectPanel(false);
+            card.view.SetCanAttackPanel(card.model.canAttack);
+            card.view.SetCanUsePanel(card.model.canUse);
+        }
+
+        yield break;
+    }
+
+    // 既存のブロッキング版（残す）
+    public List<CardController> StartCardSelection(List<CardController> selectableCards, int selectCount = 1)
+    {
+        isSelectingCard = true;
+        List<CardController> selectedCards = new List<CardController>();
+
+        CardController NC = NoCard.GetComponent<CardController>();
+        // 選択可能なカードに選択UIを表示
+        foreach (CardController card in selectableCards)
+        {
+            card.canSelect = true;
+            card.view.SetCanUsePanel(false);
+            card.view.SetCanAttackPanel(false);
+            card.view.SetCanSelectPanel(true);
+        }
+        NC.canSelect = true;
+        NC.view.SetCanSelectPanel(true);
         // カードが選択されるのを待つ
         while (isSelectingCard)
         {
@@ -141,16 +189,19 @@ public partial class GameManager
         // 選択UIを非表示にする
         foreach (CardController card in selectableCards)
         {
-            card.model.canSelect = false;
+            card.canSelect = false;
             card.view.SetCanSelectPanel(false);
             card.view.SetCanAttackPanel(card.model.canAttack);
             card.view.SetCanUsePanel(card.model.canUse);
         }
+        NC.canSelect = false;
+        NC.view.SetCanSelectPanel(false);
         return selectedCards;
     }
 
     // 指定のカードにダメージを与えるメソッド
     // --- ここから RPC で共有するダメージ処理メソッド群 ---
+
 
     // ローカルから呼んで、全クライアントへダメージ適用を通知する（カードインスタンスIDを使用）
     public void CallDamageCard(CardController card, int damage)

@@ -28,7 +28,6 @@ public class CardModel
     public string fieldPosition = "Deck"; // Deck, Hand, Field, Graveyard, Exile
     public bool canAttack = false;
     public bool PlayerCard = true;
-    public bool canSelect = false;
 
     // 初期能力
     public bool earlier = false;

@@ -9,9 +9,9 @@ public class CardController : MonoBehaviourPun
     public CardView view; // カードの見た目を管理
     public CardModel model; // カードのデータを管理
     public CardMovement movement;  // カードの移動・ドラッグ操作を管理
-    public List<string> addEffectList = new List<string>(); // 追加のカード効果を収めるリスト
     public CardEffectManager cem; // カード効果の管理クラスへの参照
     public int cardInsID;
+    public bool canSelect = false;
 
     // コンポーネントの初期化
     private void Awake()
@@ -30,7 +30,7 @@ public class CardController : MonoBehaviourPun
         System.Type type = System.Type.GetType("CEM" + cardID);
         if (type != null)
         {
-            cem = System.Activator.CreateInstance(type) as CardEffectManager;
+            cem = System.Activator.CreateInstance(type, this) as CardEffectManager;
         }
         else
         {

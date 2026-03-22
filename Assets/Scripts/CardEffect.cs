@@ -35,7 +35,7 @@ public abstract class CardEffect
     }
 
     // 効果関連カードをセットするメソッド
-    public void SetRefCards(CardController target = null, CardController reference = null)
+    public void SetRefCards(CardController target, CardController reference)
     {
         CTarget = target;
         CRef = reference;
@@ -130,7 +130,7 @@ public abstract class CEDraw : CardEffect
         DrawCard(drawCount);
     }
 
-    private void DrawCard(int count)
+    protected void DrawCard(int count)
     {
         // ドロー処理を実装
         for (int i = 0; i < count; i++)
@@ -150,7 +150,7 @@ public abstract class CEDamage : CardEffect
     {
         Damage(damage, cardAmount);
     }
-    private void Damage(int dmg, int camt)
+    protected void Damage(int dmg, int camt)
     {
         CardController[] allCards = UnityEngine.Object.FindObjectsByType<CardController>(FindObjectsSortMode.None);
         List<CardController> selectableCards = PickupCard(allCards.ToList());
@@ -173,7 +173,7 @@ public abstract class CEBuff : CardEffect
         Buff(buff, cardAmount);
     }
 
-    private void Buff(int[] buff, int camt)
+    protected void Buff(int[] buff, int camt)
     {
         CardController[] allCards = UnityEngine.Object.FindObjectsByType<CardController>(FindObjectsSortMode.None);
         List<CardController> selectableCards = PickupCard(allCards.ToList());
