@@ -9,9 +9,9 @@ using Photon.Pun;
 
 public class CEM61 : CardEffectManager
 {
-	public CEM61(CardController card) : base()
+	public CEM61() : base()
     {
-        CardEffect effect = new CEDamage61(card);
+        CardEffect effect = new CEDamage61();
         buckets[(int)CardEffectType.Grace].Add(effect);
 
     }
@@ -19,7 +19,7 @@ public class CEM61 : CardEffectManager
     class CEDamage61 : CEDamage
     {
 
-        public CEDamage61(CardController card) : base(card)
+        public CEDamage61() : base()
         {
             damage = 14;
             cardAmount = 1;

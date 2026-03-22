@@ -30,7 +30,7 @@ public class CardController : MonoBehaviourPun
         System.Type type = System.Type.GetType("CEM" + cardID);
         if (type != null)
         {
-            cem = System.Activator.CreateInstance(type, this) as CardEffectManager;
+            cem = System.Activator.CreateInstance(type) as CardEffectManager;
         }
         else
         {

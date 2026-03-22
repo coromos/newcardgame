@@ -29,14 +29,14 @@ public abstract class CardEffect
     public CardController CTarget;
     public CardController CRef;
 
-    public CardEffect(CardController source)
+    public CardEffect()
     {
-        CSource = source;
     }
 
     // 効果関連カードをセットするメソッド
-    public void SetRefCards(CardController target, CardController reference)
+    public void SetRefCards(CardController source, CardController target, CardController reference)
     {
+        CSource = source;
         CTarget = target;
         CRef = reference;
     }
@@ -124,7 +124,7 @@ public abstract class CEDraw : CardEffect
 {
     public int drawCount;
 
-    public CEDraw(CardController source) : base(source) { }
+    public CEDraw() : base() { }
     public override void Activate()
     {
         DrawCard(drawCount);
@@ -145,7 +145,7 @@ public abstract class CEDamage : CardEffect
 {
     public int damage;
     public int cardAmount;
-    public CEDamage(CardController source) : base(source) { }
+    public CEDamage() : base() { }
     public override void Activate()
     {
         Damage(damage, cardAmount);
@@ -167,7 +167,7 @@ public abstract class CEBuff : CardEffect
 {
     public int[] buff;
     public int cardAmount;
-    public CEBuff(CardController source) : base(source) { }
+    public CEBuff() : base() { }
     public override void Activate()
     {
         Buff(buff, cardAmount);
