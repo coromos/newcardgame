@@ -530,17 +530,17 @@ public partial class GameManager : MonoBehaviourPun
     {
         if (PhotonNetwork.LocalPlayer.ActorNumber == info.Sender.ActorNumber)
         {
-            CardController[] selectableCards = playerField.GetComponentsInChildren<CardController>();
+            List<CardController> selectableCards = new List<CardController>(playerField.GetComponentsInChildren<CardController>());
             selectableCards = selectableCards.Where(card => card.model.interference).ToList();
 
             if (selectableCards.Count > 0)
             {
                 List<CardController> selectedCards = StartCardSelection(selectableCards, 1);
-                selectedInterferenceCardID = selectedCards[0].cardInsID;
+                selectedInterferenceCardID = selectedCards[0].cardInsID; 
             }
             else
             {
-                selectedInterferenceCardID = -1; // 妨害可能なカードがない場合は0をセット
+                selectedInterferenceCardID = 0; // 妨害可能なカードがない場合は0をセット
             }
 
             photonView.RPC("CardBattleRPC", RpcTarget.All, selectedInterferenceCardID);
