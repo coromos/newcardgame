@@ -733,16 +733,19 @@ public partial class GameManager : MonoBehaviourPun
         if (card.model.cardCategory == CardCategory.Anima)
         {
             CallReduceSeeds(card.model.cost, true);
+            // カード効果を発動
+            UseCardEffect(card, card, CardEffectType.Alive);
+            ProcessEffectQueueOne();
+
             SetPlace(card, PlaceList.Field);
             card.movement.cardParent = playerField;
             card.DropField();
-            // カード効果を発動
-            UseCardEffect(card, card, CardEffectType.Alive);
         }
         else if (card.model.cardCategory == CardCategory.Grace)
         {
             CallReduceSeeds(card.model.cost, true);
             UseCardEffect(card, card, CardEffectType.Grace);
+            ProcessEffectQueueOne();
             card.UseGrace();
         }
     }
