@@ -49,6 +49,7 @@ public abstract class CardEffect
     // 引数のカードリストから他の条件でカードを絞り込む
     public List<CardController> PickupCard(
         List<CardController> baseCardList,
+        bool isPlayerCard = true,
         string[] cardPlaces = null,
         CardCategory[] cardCategory = null,
         CardAttribute[] cardAttribute = null,
@@ -70,7 +71,11 @@ public abstract class CardEffect
         List<CardController> selectedCards = new List<CardController>();
         foreach (var cardController in baseCardList)
         {
-            if (cardPlaces != null && System.Array.IndexOf(cardPlaces, cardController.model.fieldPosition) < 0)
+            if (cardController == null || cardController.model == null)
+                continue;
+            else if (cardController.model.PlayerCard != isPlayerCard)
+                continue;
+            else if (cardPlaces != null && System.Array.IndexOf(cardPlaces, cardController.model.fieldPosition) < 0)
                 continue;
             else if (cardCategory != null && System.Array.IndexOf(cardCategory, cardController.model.cardCategory) < 0)
                 continue;
@@ -153,7 +158,7 @@ public abstract class CEDamage : CardEffect
     protected void Damage(int dmg, int camt)
     {
         CardController[] allCards = UnityEngine.Object.FindObjectsByType<CardController>(FindObjectsSortMode.None);
-        List<CardController> selectableCards = PickupCard(allCards.ToList());
+        List<CardController> selectableCards = PickupCard(allCards.ToList(), cardPlaces: new string[]{"Field"}, isPlayerCard:false);
         List<CardController> targetCards = GameManager.instance.StartCardSelection(selectableCards, camt);
 
         for (int i = 0; i < targetCards.Count; i++)

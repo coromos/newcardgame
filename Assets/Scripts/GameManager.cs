@@ -543,7 +543,7 @@ public partial class GameManager : MonoBehaviourPun
                 selectedInterferenceCardID = 0; // 妨害可能なカードがない場合は0をセット
             }
 
-            photonView.RPC("CardBattleRPC", RpcTarget.All, selectedInterferenceCardID);
+            photonView.RPC("InterferenceRPC", RpcTarget.All, selectedInterferenceCardID);
             selectedInterferenceCardID = -1;
         }
         else
