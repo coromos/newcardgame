@@ -1078,7 +1078,7 @@ MonoBehaviour:
   enemySeedsText: {fileID: 1160000042}
   playerTreeText: {fileID: 1186264446}
   enemyTreeText: {fileID: 1490315528}
-  NoCard: {fileID: 0}
+  NoCard: {fileID: 920566140}
   isPlayerTurn: 0
   playerLeaderHP: 0
   playerSeeds: 0
@@ -1255,6 +1255,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e1f84a7606c016147a4abd101c884ecb, type: 3}
+--- !u!1 &920566140 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8274210558045909516, guid: e1f84a7606c016147a4abd101c884ecb, type: 3}
+  m_PrefabInstance: {fileID: 920566139}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &945731631
 GameObject:
   m_ObjectHideFlags: 0
