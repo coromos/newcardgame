@@ -78,3 +78,20 @@ public class CEM19 : CardEffectManager
         }
     }
 }
+
+public class CEM222 : CardEffectManager
+{
+    public CEM222() : base()
+    {
+        CardEffect effect = new CEAlive222();
+        buckets[(int)CardEffectType.Alive].Add(effect);
+    }
+    class CEAlive222 : CEDamage
+    {
+        public CEAlive222() : base()
+        {
+            damage = 13;
+            cardAmount = 1;
+        }
+    }
+}
