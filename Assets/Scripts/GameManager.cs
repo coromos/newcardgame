@@ -488,8 +488,8 @@ public partial class GameManager : MonoBehaviourPun
         {
             UseCardEffect(attackCard, defenceCard, CardEffectType.Attack);
             // ダメージ計算
-            defenceCard.GrantDamage(attackCard.model.power);
-            attackCard.GrantDamage(defenceCard.model.power);
+            defenceCard.GrantDamage(attackCard.model.power+ attackCard.model.flnPower);
+            attackCard.GrantDamage(defenceCard.model.power+ defenceCard.model.flnPower);
 
             // ダメージが耐久値を超えた場合は破壊
             attackCard.DamageDestroy();
