@@ -461,7 +461,9 @@ public partial class GameManager : MonoBehaviourPun
         selectedInterferenceCardID = INTERFERENCE_UNDECIDED;
 
         // 選択結果到着を待つ（ブロッキングしない）
+        isSelectingCard = true; // 選択モード開始
         yield return new WaitUntil(() => selectedInterferenceCardID != INTERFERENCE_UNDECIDED);
+        isSelectingCard = false; // 選択モード終了
 
         int chosenID = selectedInterferenceCardID;
 
@@ -620,7 +622,10 @@ public partial class GameManager : MonoBehaviourPun
         // 待機状態を示す値にリセット
         selectedInterferenceCardID = INTERFERENCE_UNDECIDED;
         // 選択結果到着を待つ（ブロッキングしない）
+        isSelectingCard = true; // 選択モード開始
         yield return new WaitUntil(() => selectedInterferenceCardID != INTERFERENCE_UNDECIDED);
+        isSelectingCard = false; // 選択モード終了
+
         int chosenID = selectedInterferenceCardID;
         // 妨害カードが選択されていればそのIDで攻撃処理を呼ぶ。未選択（0）の場合は防御カードを対象にする
         if (chosenID != INTERFERENCE_NONE)
