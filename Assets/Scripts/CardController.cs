@@ -53,6 +53,7 @@ public class CardController : MonoBehaviourPun
         cardInsID = 0;
         Transform setplace = GameManager.instance.GetComponent<Transform>();
         transform.SetParent(setplace, false);
+        model.fieldPosition = PlaceList.Trash.ToString();
     }
 
     // ダメージが耐久値を超えた場合にカードを破棄する

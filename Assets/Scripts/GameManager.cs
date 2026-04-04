@@ -498,12 +498,13 @@ public partial class GameManager : MonoBehaviourPun
             // 攻撃パネルを非表示にし、攻撃不可にする
             attackCard.view.SetCanAttackPanel(false);
             attackCard.model.canAttack = false;
+            attackCard.model.canITF = false;
 
             if (isitf)
             {
                 // 妨害カードがあった場合は攻撃カードの攻撃効果も発動させる
                 defenceCard.view.SetCanAttackPanel(false);
-                defenceCard.model.canAttack = false;
+                defenceCard.model.canITF = false;
             }
         }
     }
@@ -535,7 +536,7 @@ public partial class GameManager : MonoBehaviourPun
     IEnumerator HandleLocalInterferenceSelection(int targetID)
     {
         List<CardController> selectableCards = new List<CardController>(playerField.GetComponentsInChildren<CardController>());
-        selectableCards = selectableCards.Where(card => (card.model.interference && card.cardInsID != targetID　&& card.model.canAttack)).ToList();
+        selectableCards = selectableCards.Where(card => (card.model.interference && card.cardInsID != targetID　&& card.model.canITF)).ToList();
 
         int resultID = INTERFERENCE_NONE;
 
@@ -589,6 +590,7 @@ public partial class GameManager : MonoBehaviourPun
         foreach (CardController card in cardList)
         {
             card.model.canAttack = canAttack;
+            card.model.canITF = canAttack; // 攻撃可能なカードは妨害も可能にする
             card.view.SetCanAttackPanel(!card.model.noaction && canAttack);
         }
     }

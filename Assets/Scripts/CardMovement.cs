@@ -17,6 +17,12 @@ public class CardMovement : MonoBehaviour,
     // ドラッグ開始時の処理
     public void OnBeginDrag(PointerEventData eventData)
     {
+        // 選択待ちモードの場合は操作を受け付けない
+        if (GameManager.instance != null && GameManager.instance.isSelectingCard)
+        {
+            return;
+        }
+
         card = GetComponent<CardController>();
         canDrag = true;
 
@@ -54,6 +60,12 @@ public class CardMovement : MonoBehaviour,
     // ドラッグ中の処理（カードをマウス位置に追従させる）
     public void OnDrag(PointerEventData eventData)
     {
+        // 選択待ちモードでもドラッグ中の追加処理を防ぐ
+        if (GameManager.instance != null && GameManager.instance.isSelectingCard)
+        {
+            return;
+        }
+
         if (!canDrag)
         {
             return;
@@ -65,6 +77,15 @@ public class CardMovement : MonoBehaviour,
     // ドラッグ終了時の処理
     public void OnEndDrag(PointerEventData eventData)
     {
+        // 選択待ちモードでも終了処理を行わない
+        if (GameManager.instance != null && GameManager.instance.isSelectingCard)
+        {
+            // blocksRaycasts を戻すなど最低限のクリーンアップを行っておく
+            GetComponent<CanvasGroup>().blocksRaycasts = true;
+            UIManager.instance.SetUseGracePanel(false);
+            return;
+        }
+
         if (!canDrag)
         {
             return;

@@ -27,6 +27,7 @@ public class CardModel
     public bool canUse = false;
     public string fieldPosition = "Deck"; // Deck, Hand, Field, Graveyard, Exile
     public bool canAttack = false;
+    public bool canITF = true; // can Interact（【妨害】ができるか）
     public bool PlayerCard = true;
 
     // 初期能力
