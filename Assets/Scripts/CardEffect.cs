@@ -179,15 +179,17 @@ public abstract class CEDamage : CardEffect
 
 public abstract class CEBuff : CardEffect
 {
-    public int[] buff;
+    public int buffth;
+    public int buffpw;
+    public int buffdv;
     public int cardAmount;
     public CEBuff() : base() { }
     public override IEnumerator Activate()
     {
-        yield return GameManager.instance.StartCoroutine(Buff(buff, cardAmount));
+        yield return GameManager.instance.StartCoroutine(Buff(buffth, buffpw, buffdv, cardAmount));
     }
 
-    protected IEnumerator Buff(int[] buff, int camt)
+    protected IEnumerator Buff(int buffth, int buffpw, int buffdv, int camt)
     {
         CardController[] allCards = UnityEngine.Object.FindObjectsByType<CardController>(FindObjectsSortMode.None);
         List<CardController> selectableCards = PickupCard(allCards.ToList());
@@ -197,7 +199,7 @@ public abstract class CEBuff : CardEffect
         {
             for (int i = 0; i < targetCards.Count; i++)
             {
-                GameManager.instance.CallBuffCard(targetCards[i], buff[0], buff[1], buff[2]);
+                GameManager.instance.CallBuffCard(targetCards[i], buffth, buffpw, buffdv);
             }
         }
         yield break;
