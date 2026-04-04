@@ -24,11 +24,5 @@ public class CEM61 : CardEffectManager
             damage = 14;
             cardAmount = 1;
         }
-
-        public override void Activate()
-        {
-            Damage(damage, cardAmount);
-        }
-
     }
 }

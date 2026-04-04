@@ -26,9 +26,7 @@ public partial class GameManager : MonoBehaviourPun
     [SerializeField] Text playerTreeText, enemyTreeText;
     [SerializeField] GameObject NoCard;
 
-    public bool isPlayerTurn = false; //
-    //List<int> deck = new List<int>() { 4, 4, 4, 22, 22, 22, 29, 29, 29, 28, 28, 28, 26, 26, 26, 104, 104, 104, 21, 21, 21, 52, 52, 52, 38, 38, 38, 27, 27, 27 };  //
-                                                                                                                                                                  //
+    public bool isPlayerTurn = false;
     List<int> deck;
 
     public int playerLeaderHP;
@@ -42,6 +40,13 @@ public partial class GameManager : MonoBehaviourPun
 
 
     public static GameManager instance;
+    
+    // 選択関連の共有フラグと定数
+    const int INTERFERENCE_UNDECIDED = -1;
+    const int INTERFERENCE_NONE = 0;
+    // 選択された妨害カードID（-1: 未決定 / 0: 妨害なし / >0: カードID）
+    int selectedInterferenceCardID = INTERFERENCE_NONE;
+
     // シングルトンインスタンスの初期化
     public void Awake()
     {
@@ -334,66 +339,6 @@ public partial class GameManager : MonoBehaviourPun
         growTreeFlag = 0;
     }
 
-    //// 敵のターン処理
-    //IEnumerator EnemyTurn()
-    //{
-    //    Debug.Log("Enemyのターン");
-
-    //    CardController[] enemyFieldCardList = enemyField.GetComponentsInChildren<CardController>();
-
-    //    yield return new WaitForSeconds(0.5f);
-
-    //    SetAttackableFieldCard(enemyFieldCardList, true);
-
-    //    yield return new WaitForSeconds(0.5f);
-
-    //    // 敵デッキからカードを引いてフィールドに配置
-    //    if (enemy_deck.Count != 0)
-    //    {
-    //        int cardID = enemy_deck[0];
-    //        enemy_deck.RemoveAt(0);
-    //        if (enemyFieldCardList.Length < 5)
-    //        {
-    //            CreateCard(cardID, false, PlaceList.Field);
-    //        }
-    //    }
-
-    //    yield return new WaitForSeconds(0.5f);
-
-    //    int index = 0;
-
-    //    // 攻撃可能な敵カードがある限り攻撃処理を繰り返す
-    //    while (Array.Exists(enemyFieldCardList, card => card.model.canAttack))
-    //    {
-    //        CardController[] enemyCanAttackCardList = Array.FindAll(enemyFieldCardList, card => card.model.canAttack);
-    //        CardController attackCard = enemyCanAttackCardList[0];
-
-    //        CardController[] playerFieldCardList = playerField.GetComponentsInChildren<CardController>();
-
-    //        if(playerFieldCardList.Length > 0) // プレイヤーの場にカードがある場合
-    //        {
-    //            // ランダムなプレイヤーカードを攻撃
-    //            index = UnityEngine.Random.Range(0, playerFieldCardList.Length);
-    //            CardController defenceCard = playerFieldCardList[index];
-    //            yield return StartCoroutine(attackCard.movement.AttackMotion(defenceCard.transform));
-    //            CardBattle(attackCard, defenceCard);
-    //        }
-    //        else // プレイヤーの場にカードがない場合はリーダーを攻撃
-    //        {
-    //            yield return StartCoroutine(attackCard.movement.AttackMotion(targetField));
-    //            Devote(attackCard);
-    //        }
-
-    //        yield return new WaitForSeconds(0.5f);
-
-    //        enemyFieldCardList = enemyField.GetComponentsInChildren<CardController>();
-    //    }
-
-
-        // ターン終了
-    //    ChangeTurn();
-    //}
-
     public int drawBottonFlag = 0;
 
     public void DrawBotton()
@@ -476,28 +421,43 @@ public partial class GameManager : MonoBehaviourPun
         {
             enemySeeds += amount;
         }
-
     }
 
-    // カード同士のバトル処理
+    // カード同士のバトル処理（非同期化された妨害選択を行う）
     public void CardBattle(CardController attackCard, CardController defenceCard)
     {
         if (attackCard.model.canAttack == true && attackCard.model.noaction == false
             && attackCard.model.PlayerCard != defenceCard.model.PlayerCard)
         {
+            // 選択要求を全員へ送信し、その後コルーチンで結果を待つ
             photonView.RPC("SelectInterferenceRPC", RpcTarget.All);
-
-            if (selectedInterferenceCardID != 0)
-            {
-                photonView.RPC("CardBattleRPC", RpcTarget.All, attackCard.cardInsID, selectedInterferenceCardID);
-            }
-            else
-            {
-                photonView.RPC("CardBattleRPC", RpcTarget.All, attackCard.cardInsID, defenceCard.cardInsID);
-            }
-
-
+            StartCoroutine(CardBattleCoroutine(attackCard, defenceCard));
         }
+    }
+
+    // 妨害選択の結果を待ってから攻撃処理へ進むコルーチン
+    IEnumerator CardBattleCoroutine(CardController attackCard, CardController defenceCard)
+    {
+        // 待機状態を示す値にリセット
+        selectedInterferenceCardID = INTERFERENCE_UNDECIDED;
+
+        // 選択結果到着を待つ（ブロッキングしない）
+        yield return new WaitUntil(() => selectedInterferenceCardID != INTERFERENCE_UNDECIDED);
+
+        int chosenID = selectedInterferenceCardID;
+
+        // 妨害カードが選択されていればそのIDで攻撃処理を呼ぶ。未選択（0）の場合は防御カードを対象にする
+        if (chosenID != INTERFERENCE_NONE)
+        {
+            photonView.RPC("CardBattleRPC", RpcTarget.All, attackCard.cardInsID, chosenID);
+        }
+        else
+        {
+            photonView.RPC("CardBattleRPC", RpcTarget.All, attackCard.cardInsID, defenceCard.cardInsID);
+        }
+
+        // 終了後は既定値に戻す
+        selectedInterferenceCardID = INTERFERENCE_NONE;
     }
 
     [PunRPC]
@@ -523,46 +483,58 @@ public partial class GameManager : MonoBehaviourPun
         }
     }
 
-    // 【妨害】機能用のメソッド
-    // 妨害可能なカードを選択するためのRPC
+    // 妨害選択要求を受け取る RPC（選択処理は選択権を持つクライアントがローカルコルーチンで実行し、
+    // 結果を別 RPC で全員に通知する設計）
     [PunRPC]
     public void SelectInterferenceRPC(PhotonMessageInfo info)
     {
+        // 初期未決定状態に設定
+        selectedInterferenceCardID = INTERFERENCE_UNDECIDED;
+
+        // RPC 発行元が自分であれば、選択 UI を表示してローカルコルーチンで選択を行い結果を送信する
         if (PhotonNetwork.LocalPlayer.ActorNumber == info.Sender.ActorNumber)
         {
-            List<CardController> selectableCards = new List<CardController>(playerField.GetComponentsInChildren<CardController>());
-            selectableCards = selectableCards.Where(card => card.model.interference).ToList();
+            StartCoroutine(HandleLocalInterferenceSelection());
+        }
+        // それ以外のクライアントは結果通知 RPC を受け取るまで待機する（コルーチン側で WaitUntil する）
+    }
 
-            if (selectableCards.Count > 0)
-            {
-                List<CardController> selectedCards = StartCardSelection(selectableCards, 1);
-                selectedInterferenceCardID = selectedCards[0].cardInsID; 
-            }
-            else
-            {
-                selectedInterferenceCardID = 0; // 妨害可能なカードがない場合は0をセット
-            }
+    // 選択結果を全員に通知する RPC
+    [PunRPC]
+    public void SelectInterferenceResultRPC(int cardInsID, PhotonMessageInfo info)
+    {
+        selectedInterferenceCardID = cardInsID;
+    }
 
-            photonView.RPC("InterferenceRPC", RpcTarget.All, selectedInterferenceCardID);
-            selectedInterferenceCardID = -1;
+    // 選択権を持つローカルクライアントが選択 UI を表示して結果を RPC で送るコルーチン
+    IEnumerator HandleLocalInterferenceSelection()
+    {
+        List<CardController> selectableCards = new List<CardController>(playerField.GetComponentsInChildren<CardController>());
+        selectableCards = selectableCards.Where(card => card.model.interference).ToList();
+
+        int resultID = INTERFERENCE_NONE;
+
+        if (selectableCards.Count > 0)
+        {
+            // コルーチン版の選択処理を起動して完了を待つ
+            yield return StartCoroutine(StartCardSelection(selectableCards, 1));
+
+            // 選択結果を取得し、選択があればそのカードIDを送信
+            if (SelectionResults != null && SelectionResults.Count > 0 && SelectionResults[0] != null)
+            {
+                resultID = SelectionResults[0].cardInsID;
+            }
         }
         else
         {
-            // 他プレイヤーは選択されたカードIDを待つ
-            while (selectedInterferenceCardID == -1)
-            {
-                // 待機
-            }
+            // 選択可能カードがない場合は妨害なしを示す値を送る
+            resultID = INTERFERENCE_NONE;
         }
-    }
 
-    // 選択されたカードIDを共有する変数
-    int selectedInterferenceCardID = 0;
-    // 選択された【妨害】カードを通知するためのRPC
-    [PunRPC]
-    public void InterferenceRPC(int cardInsID, PhotonMessageInfo info)
-    {
-        selectedInterferenceCardID = cardInsID;
+        // 結果を全員に通知する
+        photonView.RPC("SelectInterferenceResultRPC", RpcTarget.All, resultID);
+
+        yield break;
     }
 
     void CallSetAttackableFieldCard(bool canAttack)
@@ -745,7 +717,7 @@ public partial class GameManager : MonoBehaviourPun
         {
             CallReduceSeeds(card.model.cost, true);
             UseCardEffect(card, card, CardEffectType.Grace);
-            ProcessEffectQueueOne();
+            StartCoroutine(ProcessEffectQueueOne());
             card.UseGrace();
         }
     }
@@ -759,7 +731,7 @@ public partial class GameManager : MonoBehaviourPun
     public void SetPlaceRPC(int cardIns, string placeName)
     {
         CardController card = FindCardByInstanceID(cardIns);
-        
+
         if (card != null)
         {
             Transform parentTransform = GetPlace(card.model.PlayerCard, placeName);

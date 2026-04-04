@@ -61,22 +61,23 @@ public partial class GameManager
         }
     }
 
-    // キューから1件だけ実行（FIFO）
-    public void ProcessEffectQueueOne()
+    // キューから1件だけ実行（FIFO） — コルーチン化
+    public IEnumerator ProcessEffectQueueOne()
     {
         if (effectCallQueue.Count == 0)
-            return;
+            yield break;
 
         var call = effectCallQueue.Dequeue();
-        call.Activate();
+        // call.Activate は IEnumerator に変更済み
+        yield return StartCoroutine(call.Activate());
     }
 
-    // キュー内をすべて実行（FIFO）
-    public void ProcessEffectQueueAll()
+    // キュー内をすべて実行（FIFO） — コルーチン化
+    public IEnumerator ProcessEffectQueueAll()
     {
         while (effectCallQueue.Count > 0)
         {
-            ProcessEffectQueueOne();
+            yield return StartCoroutine(ProcessEffectQueueOne());
         }
     }
 
@@ -85,7 +86,7 @@ public partial class GameManager
     {
         while (effectCallQueue.Count > 0)
         {
-            ProcessEffectQueueOne();
+            yield return StartCoroutine(ProcessEffectQueueOne());
             if (delayBetween > 0f)
             {
                 yield return new WaitForSeconds(delayBetween);
@@ -100,8 +101,8 @@ public partial class GameManager
     public bool isSelectingCard = false;
     public CardController SelectedCard;
 
-    // コルーチン用に選択結果を格納するフィールドを追加
-    public CardController SelectionResult;
+    // コルーチン用に選択結果を格納するフィールドを追加（複数選択対応）
+    public List<CardController> SelectionResults;
 
     // カード選択処理（クリックで SetSelectedCard を呼ぶ既存フローを利用）
     public void SetSelectedCard(CardController card)
@@ -109,56 +110,14 @@ public partial class GameManager
         if (isSelectingCard)
         {
             SelectedCard = card;
-            isSelectingCard = false;
+            // isSelectingCard の制御は StartCardSelection 内で行う
         }
     }
 
-    // 既存のブロッキング版は残すが UI 用コルーチン版を追加（メインスレッドをブロックしない）
-    public IEnumerator StartCardSelectionCoroutine(List<CardController> selectableCards, int selectCount = 1)
+    public IEnumerator StartCardSelection(List<CardController> selectableCards, int selectCount = 1)
     {
         isSelectingCard = true;
-        SelectionResult = null;
-
-        // 選択可能なカードに選択UIを表示
-        foreach (CardController card in selectableCards)
-        {
-            card.canSelect = true;
-            card.view.SetCanUsePanel(false);
-            card.view.SetCanAttackPanel(false);
-            card.view.SetCanSelectPanel(true);
-        }
-
-        // 選択されるのを待つ（非ブロッキング）
-        while (isSelectingCard)
-        {
-            if (SelectedCard != null)
-            {
-                SelectionResult = SelectedCard;
-                SelectedCard.view.SetCanSelectPanel(false);
-                SelectedCard = null;
-                // 単一選択前提のため選択が入ったら抜ける
-                isSelectingCard = false;
-            }
-            yield return null;
-        }
-
-        // 選択UIを非表示にする
-        foreach (CardController card in selectableCards)
-        {
-            card.canSelect = false;
-            card.view.SetCanSelectPanel(false);
-            card.view.SetCanAttackPanel(card.model.canAttack);
-            card.view.SetCanUsePanel(card.model.canUse);
-        }
-
-        yield break;
-    }
-
-    // 既存のブロッキング版（残す）
-    public List<CardController> StartCardSelection(List<CardController> selectableCards, int selectCount = 1)
-    {
-        isSelectingCard = true;
-        List<CardController> selectedCards = new List<CardController>();
+        SelectionResults = new List<CardController>();
 
         CardController NC = NoCard.GetComponent<CardController>();
         // 選択可能なカードに選択UIを表示
@@ -171,20 +130,21 @@ public partial class GameManager
         }
         NC.canSelect = true;
         NC.view.SetCanSelectPanel(true);
-        // カードが選択されるのを待つ
+        // カードが選択されるのを待つ（非ブロッキング）
         while (isSelectingCard)
         {
             // 選択されたカードをリストに追加
             if (SelectedCard != null)
             {
-                selectedCards.Add(SelectedCard);
+                SelectionResults.Add(SelectedCard);
                 SelectedCard.view.SetCanSelectPanel(false);
                 SelectedCard = null;
-                if (selectedCards.Count >= Math.Max(selectableCards.Count, selectCount))
+                if (SelectionResults.Count >= Math.Max(selectableCards.Count, selectCount))
                 {
                     isSelectingCard = false;
                 }
             }
+            yield return null;
         }
         // 選択UIを非表示にする
         foreach (CardController card in selectableCards)
@@ -196,7 +156,7 @@ public partial class GameManager
         }
         NC.canSelect = false;
         NC.view.SetCanSelectPanel(false);
-        return selectedCards;
+        yield break;
     }
 
     // 指定のカードにダメージを与えるメソッド

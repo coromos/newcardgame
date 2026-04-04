@@ -41,9 +41,9 @@ public abstract class CardEffect
         CRef = reference;
     }
 
-    // カード効果の発動
-    // ここではmethod名のみを指定して、実際の処理は継承クラスで実装する
-    public abstract void Activate();
+    // カード効果の発動（コルーチン化）
+    // 派生クラスは IEnumerator を返すように変更する
+    public abstract IEnumerator Activate();
 
     // カード限定メソッド
     // 引数のカードリストから他の条件でカードを絞り込む
@@ -130,9 +130,10 @@ public abstract class CEDraw : CardEffect
     public int drawCount;
 
     public CEDraw() : base() { }
-    public override void Activate()
+    public override IEnumerator Activate()
     {
         DrawCard(drawCount);
+        yield break;
     }
 
     protected void DrawCard(int count)
@@ -151,20 +152,28 @@ public abstract class CEDamage : CardEffect
     public int damage;
     public int cardAmount;
     public CEDamage() : base() { }
-    public override void Activate()
+    public override IEnumerator Activate()
     {
-        Damage(damage, cardAmount);
+        yield return GameManager.instance.StartCoroutine(Damage(damage, cardAmount));
     }
-    protected void Damage(int dmg, int camt)
+
+    protected IEnumerator Damage(int dmg, int camt)
     {
         CardController[] allCards = UnityEngine.Object.FindObjectsByType<CardController>(FindObjectsSortMode.None);
-        List<CardController> selectableCards = PickupCard(allCards.ToList(), cardPlaces: new string[]{"Field"}, isPlayerCard:false);
-        List<CardController> targetCards = GameManager.instance.StartCardSelection(selectableCards, camt);
+        List<CardController> selectableCards = PickupCard(allCards.ToList(), cardPlaces: new string[] { "Field" }, isPlayerCard: false);
 
-        for (int i = 0; i < targetCards.Count; i++)
+        // StartCardSelection は IEnumerator に変更済み -> 起動して完了を待つ
+        yield return GameManager.instance.StartCoroutine(GameManager.instance.StartCardSelection(selectableCards, camt));
+        List<CardController> targetCards = GameManager.instance.SelectionResults;
+
+        if (targetCards != null)
         {
-            GameManager.instance.CallDamageCard(targetCards[i], dmg);
+            for (int i = 0; i < targetCards.Count; i++)
+            {
+                GameManager.instance.CallDamageCard(targetCards[i], dmg);
+            }
         }
+        yield break;
     }
 }
 
@@ -173,19 +182,24 @@ public abstract class CEBuff : CardEffect
     public int[] buff;
     public int cardAmount;
     public CEBuff() : base() { }
-    public override void Activate()
+    public override IEnumerator Activate()
     {
-        Buff(buff, cardAmount);
+        yield return GameManager.instance.StartCoroutine(Buff(buff, cardAmount));
     }
 
-    protected void Buff(int[] buff, int camt)
+    protected IEnumerator Buff(int[] buff, int camt)
     {
         CardController[] allCards = UnityEngine.Object.FindObjectsByType<CardController>(FindObjectsSortMode.None);
         List<CardController> selectableCards = PickupCard(allCards.ToList());
-        List<CardController> targetCards = GameManager.instance.StartCardSelection(selectableCards, camt);
-        for (int i = 0; i < targetCards.Count; i++)
+        yield return GameManager.instance.StartCoroutine(GameManager.instance.StartCardSelection(selectableCards, camt));
+        List<CardController> targetCards = GameManager.instance.SelectionResults;
+        if (targetCards != null)
         {
-            GameManager.instance.CallBuffCard(targetCards[i], buff[0], buff[1], buff[2]);
+            for (int i = 0; i < targetCards.Count; i++)
+            {
+                GameManager.instance.CallBuffCard(targetCards[i], buff[0], buff[1], buff[2]);
+            }
         }
+        yield break;
     }
 }
