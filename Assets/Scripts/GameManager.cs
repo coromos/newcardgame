@@ -343,6 +343,12 @@ public partial class GameManager : MonoBehaviourPun
 
     public void DrawBotton()
     {
+        // 選択待ちモード中はボタン操作を受け付けない
+        if (isSelectingCard)
+        {
+            return;
+        }
+
         int drawBottonCost = 0;
         if (drawBottonFlag == 0 && playerSeeds >= 1)
         {
@@ -374,6 +380,12 @@ public partial class GameManager : MonoBehaviourPun
 
     public void GrowTree()
     {
+        // 選択待ちモード中はボタン操作を受け付けない
+        if (isSelectingCard)
+        {
+            return;
+        }
+
         if (growTreeFlag == 0 && playerSeeds >= 2)
         {
             // 初回
@@ -426,6 +438,12 @@ public partial class GameManager : MonoBehaviourPun
     // カード同士のバトル処理（非同期化された妨害選択を行う）
     public void CardBattle(CardController attackCard, CardController defenceCard)
     {
+        // 選択待ちモード中は他のアクションをブロックする
+        if (isSelectingCard)
+        {
+            return;
+        }
+
         if (attackCard.model.canAttack == true && attackCard.model.noaction == false
             && attackCard.model.PlayerCard != defenceCard.model.PlayerCard)
         {
@@ -449,11 +467,11 @@ public partial class GameManager : MonoBehaviourPun
         // 妨害カードが選択されていればそのIDで攻撃処理を呼ぶ。未選択（0）の場合は防御カードを対象にする
         if (chosenID != INTERFERENCE_NONE)
         {
-            photonView.RPC("CardBattleRPC", RpcTarget.All, attackCard.cardInsID, chosenID);
+            photonView.RPC("CardBattleRPC", RpcTarget.All, attackCard.cardInsID, chosenID, true);
         }
         else
         {
-            photonView.RPC("CardBattleRPC", RpcTarget.All, attackCard.cardInsID, defenceCard.cardInsID);
+            photonView.RPC("CardBattleRPC", RpcTarget.All, attackCard.cardInsID, defenceCard.cardInsID, false);
         }
 
         // 終了後は既定値に戻す
@@ -461,14 +479,14 @@ public partial class GameManager : MonoBehaviourPun
     }
 
     [PunRPC]
-    public void CardBattleRPC(int attackCardID, int defenceCardID)
+    public void CardBattleRPC(int attackCardID, int defenceCardID, bool isitf)
     {
         CardController attackCard = FindCardByInstanceID(attackCardID);
         CardController defenceCard = FindCardByInstanceID(defenceCardID);
 
         if (attackCard != null && defenceCard != null)
         {
-            GameManager.instance.UseCardEffect(attackCard, defenceCard, CardEffectType.Attack);
+            UseCardEffect(attackCard, defenceCard, CardEffectType.Attack);
             // ダメージ計算
             defenceCard.GrantDamage(attackCard.model.power);
             attackCard.GrantDamage(defenceCard.model.power);
@@ -480,6 +498,13 @@ public partial class GameManager : MonoBehaviourPun
             // 攻撃パネルを非表示にし、攻撃不可にする
             attackCard.view.SetCanAttackPanel(false);
             attackCard.model.canAttack = false;
+
+            if (isitf)
+            {
+                // 妨害カードがあった場合は攻撃カードの攻撃効果も発動させる
+                defenceCard.view.SetCanAttackPanel(false);
+                defenceCard.model.canAttack = false;
+            }
         }
     }
 
@@ -510,7 +535,7 @@ public partial class GameManager : MonoBehaviourPun
     IEnumerator HandleLocalInterferenceSelection(int targetID)
     {
         List<CardController> selectableCards = new List<CardController>(playerField.GetComponentsInChildren<CardController>());
-        selectableCards = selectableCards.Where(card => (card.model.interference && card.cardInsID != targetID)).ToList();
+        selectableCards = selectableCards.Where(card => (card.model.interference && card.cardInsID != targetID　&& card.model.canAttack)).ToList();
 
         int resultID = INTERFERENCE_NONE;
 
@@ -570,6 +595,12 @@ public partial class GameManager : MonoBehaviourPun
 
     public void CallDevote(CardController attackCard)
     {
+        // 選択待ちモード中は操作を受け付けない
+        if (isSelectingCard)
+        {
+            return;
+        }
+
         if (attackCard.model.canAttack == false)
         {
             return;
@@ -695,6 +726,12 @@ public partial class GameManager : MonoBehaviourPun
     // 手札からカードを使用
     public void UseCardFromHand(CardController card)
     {
+        // 選択待ちモード中はカード使用を受け付けない
+        if (isSelectingCard)
+        {
+            return;
+        }
+
         if (!isPlayerTurn )
         {
             return;
