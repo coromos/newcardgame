@@ -19,7 +19,7 @@ MonoBehaviour:
   cardStains: 
   cardRarity: 3
   cost: 4
-  toughness: 34
+  toughness: 37
   power: 0
   devote: 0
   icon: {fileID: 7358039735495839910, guid: 09aa4c5b2f6b650468c71881f83d6383, type: 3}
@@ -31,3 +31,6 @@ MonoBehaviour:
   homeostasis: 0
   alone: 0
   noaction: 0
+  nodevote: 0
+  aplDmg: 0
+  recDmg: 0

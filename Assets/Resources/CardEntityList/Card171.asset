@@ -31,3 +31,6 @@ MonoBehaviour:
   homeostasis: 0
   alone: 0
   noaction: 0
+  nodevote: 0
+  aplDmg: 0
+  recDmg: 0
