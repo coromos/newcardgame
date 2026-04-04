@@ -430,7 +430,7 @@ public partial class GameManager : MonoBehaviourPun
             && attackCard.model.PlayerCard != defenceCard.model.PlayerCard)
         {
             // 選択要求を全員へ送信し、その後コルーチンで結果を待つ
-            photonView.RPC("SelectInterferenceRPC", RpcTarget.All);
+            photonView.RPC("SelectInterferenceRPC", RpcTarget.All, defenceCard.cardInsID);
             StartCoroutine(CardBattleCoroutine(attackCard, defenceCard));
         }
     }
@@ -486,15 +486,15 @@ public partial class GameManager : MonoBehaviourPun
     // 妨害選択要求を受け取る RPC（選択処理は選択権を持つクライアントがローカルコルーチンで実行し、
     // 結果を別 RPC で全員に通知する設計）
     [PunRPC]
-    public void SelectInterferenceRPC(PhotonMessageInfo info)
+    public void SelectInterferenceRPC(int targetID, PhotonMessageInfo info)
     {
         // 初期未決定状態に設定
         selectedInterferenceCardID = INTERFERENCE_UNDECIDED;
 
-        // RPC 発行元が自分であれば、選択 UI を表示してローカルコルーチンで選択を行い結果を送信する
-        if (PhotonNetwork.LocalPlayer.ActorNumber == info.Sender.ActorNumber)
+        // RPC 発行元が相手であれば、選択 UI を表示してローカルコルーチンで選択を行い結果を送信する
+        if (PhotonNetwork.LocalPlayer.ActorNumber != info.Sender.ActorNumber)
         {
-            StartCoroutine(HandleLocalInterferenceSelection());
+            StartCoroutine(HandleLocalInterferenceSelection(targetID));
         }
         // それ以外のクライアントは結果通知 RPC を受け取るまで待機する（コルーチン側で WaitUntil する）
     }
@@ -507,10 +507,10 @@ public partial class GameManager : MonoBehaviourPun
     }
 
     // 選択権を持つローカルクライアントが選択 UI を表示して結果を RPC で送るコルーチン
-    IEnumerator HandleLocalInterferenceSelection()
+    IEnumerator HandleLocalInterferenceSelection(int targetID)
     {
         List<CardController> selectableCards = new List<CardController>(playerField.GetComponentsInChildren<CardController>());
-        selectableCards = selectableCards.Where(card => card.model.interference).ToList();
+        selectableCards = selectableCards.Where(card => (card.model.interference && card.cardInsID != targetID)).ToList();
 
         int resultID = INTERFERENCE_NONE;
 
