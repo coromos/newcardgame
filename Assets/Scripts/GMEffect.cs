@@ -130,6 +130,7 @@ public partial class GameManager
         }
         NC.canSelect = true;
         NC.view.SetCanSelectPanel(true);
+        NoCard.SetActive(true);
         // カードが選択されるのを待つ（非ブロッキング）
         while (isSelectingCard)
         {
@@ -152,10 +153,11 @@ public partial class GameManager
             card.canSelect = false;
             card.view.SetCanSelectPanel(false);
             card.view.SetCanAttackPanel(card.model.canAttack);
-            card.view.SetCanUsePanel(card.model.canUse);
+            //card.view.SetCanUsePanel(card.model.canUse);
         }
         NC.canSelect = false;
         NC.view.SetCanSelectPanel(false);
+        NoCard.SetActive(false);
         yield break;
     }
 

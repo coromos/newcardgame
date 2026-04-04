@@ -608,7 +608,30 @@ public partial class GameManager : MonoBehaviourPun
             return;
         }
 
-        photonView.RPC("DevoteRPC", RpcTarget.All, attackCard.cardInsID);
+        photonView.RPC("SelectInterferenceRPC", RpcTarget.All, 0);
+
+        // 選択結果到着を待つ（ブロッキングしない）
+        StartCoroutine(CardDevoteCoroutine(attackCard));
+    }
+
+    IEnumerator CardDevoteCoroutine(CardController attackCard)
+    {
+        // 待機状態を示す値にリセット
+        selectedInterferenceCardID = INTERFERENCE_UNDECIDED;
+        // 選択結果到着を待つ（ブロッキングしない）
+        yield return new WaitUntil(() => selectedInterferenceCardID != INTERFERENCE_UNDECIDED);
+        int chosenID = selectedInterferenceCardID;
+        // 妨害カードが選択されていればそのIDで攻撃処理を呼ぶ。未選択（0）の場合は防御カードを対象にする
+        if (chosenID != INTERFERENCE_NONE)
+        {
+            photonView.RPC("CardBattleRPC", RpcTarget.All, attackCard.cardInsID, chosenID, true);
+        }
+        else
+        {
+            photonView.RPC("DevoteRPC", RpcTarget.All, attackCard.cardInsID);
+        }
+        // 終了後は既定値に戻す
+        selectedInterferenceCardID = INTERFERENCE_NONE;
     }
 
     //リーダーへの攻撃処理のRPC
@@ -741,7 +764,7 @@ public partial class GameManager : MonoBehaviourPun
 
         UIManager.instance.SetUseGracePanel(false);
 
-        if (card.model.cardCategory == CardCategory.Anima)
+        if (card.model.cardCategory == CardCategory.Anima || card.model.cardCategory == CardCategory.Ornament)
         {
             CallReduceSeeds(card.model.cost, true);
             // カード効果を発動
