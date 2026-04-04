@@ -151,8 +151,21 @@ public partial class GameManager
         {
             card.canSelect = false;
             card.view.SetCanSelectPanel(false);
-            card.view.SetCanAttackPanel(card.model.canAttack);
-            //card.view.SetCanUsePanel(card.model.canUse);
+            if (card.model.fieldPosition.Equals(PlaceList.Field.ToString()))
+            {
+                if (card.model.PlayerCard)
+                {
+                    card.view.SetCanAttackPanel(card.model.canAttack);
+                }
+                else
+                {
+                    card.view.SetCanUsePanel(card.model.canITF);
+                }
+            }
+            else if (card.model.fieldPosition.Equals(PlaceList.Hand.ToString()))
+            {
+                card.view.SetCanUsePanel(card.model.canUse);
+            }
         }
         NC.canSelect = false;
         NoCard.SetActive(false);

@@ -105,4 +105,24 @@ public class CardModel
 
         Resources.UnloadAsset(cardEntity);
     }
+
+    public int GetPower()
+    {
+        return power + flnPower + tmpPower;
+    }
+
+    public int GetToughness()
+    {
+        return toughness + flnToughness + tmpToughness - damage;
+    }
+
+    public int GetCost()
+    {
+        return cost + flnCost + tmpCost;
+    }
+
+    public int GetDevote()
+    {
+        return devote + flnDevote + tmpDevote;
+    }
 }

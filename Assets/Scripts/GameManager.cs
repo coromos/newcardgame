@@ -489,8 +489,8 @@ public partial class GameManager : MonoBehaviourPun
         {
             UseCardEffect(attackCard, defenceCard, CardEffectType.Attack);
             // ダメージ計算
-            defenceCard.GrantDamage(attackCard.model.power+ attackCard.model.flnPower);
-            attackCard.GrantDamage(defenceCard.model.power+ defenceCard.model.flnPower);
+            defenceCard.GrantDamage(attackCard.model.GetPower());
+            attackCard.GrantDamage(defenceCard.model.GetPower());
 
             // ダメージが耐久値を超えた場合は破壊
             attackCard.DamageDestroy();
@@ -591,7 +591,7 @@ public partial class GameManager : MonoBehaviourPun
         foreach (CardController card in cardList)
         {
             card.model.canAttack = canAttack;
-            card.model.canITF = canAttack; // 攻撃可能なカードは妨害も可能にする
+            card.model.canITF = card.model.interference; // 攻撃可能なカードは妨害も可能にする
             card.view.SetCanAttackPanel(!card.model.noaction && canAttack);
         }
     }
@@ -651,19 +651,19 @@ public partial class GameManager : MonoBehaviourPun
     {if (attackCard.model.PlayerCard == true) // プレイヤーカードの場合
         {
             Debug.Log(attackCard.model.name + "がリーダーに奉納");
-            CreateThrift(attackCard.model.devote, true);
+            CreateThrift(attackCard.model.GetDevote(), true);
         }
         else // 敵カードの場合
         {
             Debug.Log(attackCard.model.name + "が敵に奉納");
-            CreateThrift(attackCard.model.devote, false);
+            CreateThrift(attackCard.model.GetDevote(), false);
         }
 
         attackCard.model.canAttack = false;
         attackCard.view.SetCanAttackPanel(false);
 
         // 奉納分のダメージを与えて破壊判定
-        attackCard.GrantDamage(attackCard.model.devote);
+        attackCard.GrantDamage(attackCard.model.GetDevote());
         attackCard.DamageDestroy();
         ShowLeaderHP();
     }

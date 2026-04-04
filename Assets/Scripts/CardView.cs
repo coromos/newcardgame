@@ -13,10 +13,10 @@ public class CardView : MonoBehaviour
     // カードデータをUIに反映
     public void Show(CardModel cardModel)
     {
-        costText.text = (cardModel.cost+ cardModel.flnCost).ToString();
-        toughnessText.text = (cardModel.toughness - cardModel.damage).ToString();
-        powerText.text = (cardModel.power+ cardModel.flnPower).ToString();
-        devoteText.text = (cardModel.devote+ cardModel.flnDevote).ToString();
+        costText.text = cardModel.GetCost().ToString();
+        toughnessText.text = cardModel.GetToughness().ToString();
+        powerText.text = cardModel.GetPower().ToString();
+        devoteText.text = cardModel.GetDevote().ToString();
         iconImage.sprite = cardModel.icon;
     }
 

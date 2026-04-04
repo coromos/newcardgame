@@ -70,6 +70,7 @@ public class CardController : MonoBehaviourPun
     {
         model.fieldPosition = "Field";
         model.canAttack = model.earlier;
+        model.canITF = model.interference;
         view.SetCanUsePanel(model.canAttack);
     }
 
