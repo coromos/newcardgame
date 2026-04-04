@@ -746,11 +746,11 @@ public partial class GameManager : MonoBehaviourPun
             CallReduceSeeds(card.model.cost, true);
             // カード効果を発動
             UseCardEffect(card, card, CardEffectType.Alive);
-            ProcessEffectQueueOne();
 
             SetPlace(card, PlaceList.Field);
             card.movement.cardParent = playerField;
             card.DropField();
+            StartCoroutine(ProcessEffectQueueOne());
         }
         else if (card.model.cardCategory == CardCategory.Grace)
         {
