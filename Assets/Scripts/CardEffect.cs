@@ -192,7 +192,7 @@ public abstract class CEBuff : CardEffect
     protected IEnumerator Buff(int buffth, int buffpw, int buffdv, int camt)
     {
         CardController[] allCards = UnityEngine.Object.FindObjectsByType<CardController>(FindObjectsSortMode.None);
-        List<CardController> selectableCards = PickupCard(allCards.ToList());
+        List<CardController> selectableCards = PickupCard(allCards.ToList(), cardPlaces: new string[] { "Field" }, isPlayerCard: true);
         yield return GameManager.instance.StartCoroutine(GameManager.instance.StartCardSelection(selectableCards, camt));
         List<CardController> targetCards = GameManager.instance.SelectionResults;
         if (targetCards != null)

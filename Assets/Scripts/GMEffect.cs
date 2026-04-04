@@ -139,7 +139,7 @@ public partial class GameManager
                 SelectionResults.Add(SelectedCard);
                 SelectedCard.view.SetCanSelectPanel(false);
                 SelectedCard = null;
-                if (SelectionResults.Count >= Math.Max(selectableCards.Count, selectCount))
+                if (SelectionResults.Count >= Math.Min(selectableCards.Count, selectCount))
                 {
                     isSelectingCard = false;
                 }
