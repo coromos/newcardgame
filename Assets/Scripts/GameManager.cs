@@ -306,8 +306,8 @@ public partial class GameManager : MonoBehaviourPun
         }
         else
         {
-            StartCoroutine(uIManager.ShowChangeTurnPanel());
             isPlayerTurn = false;
+            StartCoroutine(uIManager.ShowChangeTurnPanel());
             CardController[] playerCardList = playerHand.GetComponentsInChildren<CardController>();
             foreach (CardController card in playerCardList)
             {

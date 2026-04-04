@@ -13,6 +13,8 @@ public class AttackedCard : MonoBehaviour, IDropHandler, IPointerClickHandler
         // 防御側カード（このカード自身）を取得
         CardController defenceCard = GetComponent<CardController>();
 
+        if(defenceCard.model.stealth) return; // ステルス持ちのカードは攻撃対象にならない
+
         // ゲームマネージャーにバトル処理を依頼
         GameManager.instance.CardBattle(attackCard, defenceCard);
     }
