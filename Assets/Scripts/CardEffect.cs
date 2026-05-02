@@ -29,6 +29,28 @@ public abstract class CardEffect
     public CardController CTarget;
     public CardController CRef;
 
+    // --- カード絞り込み用プロパティ（共通化） ---
+    // デフォルトは既存の挙動を壊さないように安定した値を設定しています。
+    // 派生クラスで必要に応じて上書きしてください。
+    public bool isPlayerCard = true;
+    public string[] cardPlaces = null;
+    public CardCategory[] cardCategory = null;
+    public CardAttribute[] cardAttribute = null;
+    public CardStain[] cardStain = null;
+    public int? minCost = null;
+    public int? maxCost = null;
+    public int[] listCost = null;
+    public int? minToughness = null;
+    public int? maxToughness = null;
+    public int? minPower = null;
+    public int? maxPower = null;
+    public int? minDevote = null;
+    public int? maxDevote = null;
+    public int? minDamage = null;
+    public int? maxDamage = null;
+    public bool? canAttack = null;
+    // ---------------------------------------------
+
     public CardEffect()
     {
     }
@@ -151,7 +173,13 @@ public abstract class CEDamage : CardEffect
 {
     public int damage;
     public int cardAmount;
-    public CEDamage() : base() { }
+
+    public CEDamage() : base()
+    {
+        // 既存の CEDamage の既定動作を維持（相手のフィールドを対象）
+        isPlayerCard = false;
+        cardPlaces = new string[] { "Field" };
+    }
     public override IEnumerator Activate()
     {
         yield return GameManager.instance.StartCoroutine(Damage(damage, cardAmount));
@@ -160,7 +188,26 @@ public abstract class CEDamage : CardEffect
     protected IEnumerator Damage(int dmg, int camt)
     {
         CardController[] allCards = UnityEngine.Object.FindObjectsByType<CardController>(FindObjectsSortMode.None);
-        List<CardController> selectableCards = PickupCard(allCards.ToList(), cardPlaces: new string[] { "Field" }, isPlayerCard: false);
+        List<CardController> selectableCards = PickupCard(
+            allCards.ToList(),
+            isPlayerCard: isPlayerCard,
+            cardPlaces: cardPlaces,
+            cardCategory: cardCategory,
+            cardAttribute: cardAttribute,
+            cardStain: cardStain,
+            minCost: minCost,
+            maxCost: maxCost,
+            listCost: listCost,
+            minToughness: minToughness,
+            maxToughness: maxToughness,
+            minPower: minPower,
+            maxPower: maxPower,
+            minDevote: minDevote,
+            maxDevote: maxDevote,
+            minDamage: minDamage,
+            maxDamage: maxDamage,
+            canAttack: canAttack
+        );
 
         // StartCardSelection は IEnumerator に変更済み -> 起動して完了を待つ
         yield return GameManager.instance.StartCoroutine(GameManager.instance.StartCardSelection(selectableCards, camt));
@@ -177,13 +224,80 @@ public abstract class CEDamage : CardEffect
     }
 }
 
+/// <summary>
+/// 指定されたフィルタに合致するカードからランダムに対象を選びダメージを与える効果クラス。
+/// フィルタは基底クラス `CardEffect` の公開プロパティ（isPlayerCard / cardPlaces / ...）を使用します。
+/// </summary>
+public class CERandomDamage : CEDamage
+{
+    public CERandomDamage() : base() { }
+
+    public override IEnumerator Activate()
+    {
+        yield return GameManager.instance.StartCoroutine(RandomDamage(damage, cardAmount));
+    }
+
+    // 引数にはダメージ量と対象数のみ。フィルタはクラスプロパティから PickupCard に渡す。
+    protected IEnumerator RandomDamage(int dmg, int camt)
+    {
+        if (camt <= 0)
+            yield break;
+
+        CardController[] allCards = UnityEngine.Object.FindObjectsByType<CardController>(FindObjectsSortMode.None);
+        List<CardController> selectable = PickupCard(
+            allCards.ToList(),
+            isPlayerCard: isPlayerCard,
+            cardPlaces: cardPlaces,
+            cardCategory: cardCategory,
+            cardAttribute: cardAttribute,
+            cardStain: cardStain,
+            minCost: minCost,
+            maxCost: maxCost,
+            listCost: listCost,
+            minToughness: minToughness,
+            maxToughness: maxToughness,
+            minPower: minPower,
+            maxPower: maxPower,
+            minDevote: minDevote,
+            maxDevote: maxDevote,
+            minDamage: minDamage,
+            maxDamage: maxDamage,
+            canAttack: canAttack
+        );
+
+        if (selectable == null || selectable.Count == 0)
+            yield break;
+
+        int toSelect = Mathf.Min(camt, selectable.Count);
+        for (int i = 0; i < toSelect; i++)
+        {
+            int idx = UnityEngine.Random.Range(0, selectable.Count);
+            var target = selectable[idx];
+            GameManager.instance.CallDamageCard(target, dmg);
+            // 重複選択を避けるため除去
+            selectable.RemoveAt(idx);
+            // アニメーション等の余裕を持たせるため1フレーム待機
+            yield return null;
+        }
+
+        yield break;
+    }
+}
+
 public abstract class CEBuff : CardEffect
 {
     public int buffth;
     public int buffpw;
     public int buffdv;
     public int cardAmount;
-    public CEBuff() : base() { }
+
+    public CEBuff() : base()
+    {
+        // 既存の CEBuff の既定動作を維持（自分のフィールドを対象）
+        isPlayerCard = true;
+        cardPlaces = new string[] { "Field" };
+    }
+
     public override IEnumerator Activate()
     {
         yield return GameManager.instance.StartCoroutine(Buff(buffth, buffpw, buffdv, cardAmount));
@@ -192,7 +306,27 @@ public abstract class CEBuff : CardEffect
     protected IEnumerator Buff(int buffth, int buffpw, int buffdv, int camt)
     {
         CardController[] allCards = UnityEngine.Object.FindObjectsByType<CardController>(FindObjectsSortMode.None);
-        List<CardController> selectableCards = PickupCard(allCards.ToList(), cardPlaces: new string[] { "Field" }, isPlayerCard: true);
+        List<CardController> selectableCards = PickupCard(
+            allCards.ToList(),
+            isPlayerCard: isPlayerCard,
+            cardPlaces: cardPlaces,
+            cardCategory: cardCategory,
+            cardAttribute: cardAttribute,
+            cardStain: cardStain,
+            minCost: minCost,
+            maxCost: maxCost,
+            listCost: listCost,
+            minToughness: minToughness,
+            maxToughness: maxToughness,
+            minPower: minPower,
+            maxPower: maxPower,
+            minDevote: minDevote,
+            maxDevote: maxDevote,
+            minDamage: minDamage,
+            maxDamage: maxDamage,
+            canAttack: canAttack
+        );
+
         yield return GameManager.instance.StartCoroutine(GameManager.instance.StartCardSelection(selectableCards, camt));
         List<CardController> targetCards = GameManager.instance.SelectionResults;
         if (targetCards != null)
