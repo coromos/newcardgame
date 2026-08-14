@@ -139,9 +139,9 @@ public class CEM119 : CardEffectManager
 
         public override IEnumerator Activate()
         {
-            if (gameManager.isPlayerTurn)
+            if (!(gameManager.isPlayerTurn ^ CSource.model.PlayerCard))
             {
-                gameManager.CallGainThrive(hanei, ismine);
+                gameManager.CallGainThrive(hanei, !ismine ^ CSource.model.PlayerCard);
             }
             yield return null;
         }
