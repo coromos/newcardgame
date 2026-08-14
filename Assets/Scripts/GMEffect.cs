@@ -304,7 +304,8 @@ public partial class GameManager
     [PunRPC]
     void RPC_GainThrive(int amount, bool isMine, PhotonMessageInfo info)
     {
-        CreateThrift(amount, isMine);
+        bool isPlayer = PhotonNetwork.LocalPlayer.ActorNumber != info.Sender.ActorNumber;
+        CreateThrift(amount, isPlayer ^ isMine);
     }
     // --- RPC ダメージ処理ここまで ---
 

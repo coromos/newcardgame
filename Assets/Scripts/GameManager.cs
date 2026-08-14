@@ -189,7 +189,7 @@ public partial class GameManager : MonoBehaviourPun
         StartCoroutine(TurnCalc());
     }
 
-    void CreateCard(int cardID, bool myCard, PlaceList place)
+    public void CreateCard(int cardID, bool myCard, PlaceList place)
     {
         photonView.RPC("CreateCardRPC", RpcTarget.All, cardID, myCard, PhotonNetwork.LocalPlayer.ActorNumber, cardInsID, place.ToString());
 
@@ -201,6 +201,24 @@ public partial class GameManager : MonoBehaviourPun
     {
         bool myCard = (plNum != PhotonNetwork.LocalPlayer.ActorNumber) ^ tmpmyCard;
         Transform parentTransform = GetPlace(myCard, placeName);
+        // parentTransform が Fieldの場合は、カードが既に5枚ある場合は生成しない
+        if (placeName == PlaceList.Field.ToString())
+        {
+            CardController[] fieldCardList = parentTransform.GetComponentsInChildren<CardController>();
+            if (fieldCardList.Length >= 5)
+            {
+                return;
+            }
+        }
+        // parentTransform が Handの場合は、カードが既に9枚ある場合は生成しない
+        else if (placeName == PlaceList.Hand.ToString())
+        {
+            CardController[] handCardList = parentTransform.GetComponentsInChildren<CardController>();
+            if (handCardList.Length >= 9)
+            {
+                return;
+            }
+        }
 
         // 待機中カードがあればそれを使用する
         CardController[] setCardList = GetComponentsInChildren<CardController>();
@@ -248,7 +266,7 @@ public partial class GameManager : MonoBehaviourPun
 
             deckCardList = enemyDeck.GetComponentsInChildren<CardController>();
         }
-        if (deckCardList != null)
+        if (deckCardList != null && deckCardList.Length > 0)
         {
             PlaceList place = PlaceList.Trash;
             // 手札が9枚未満ならカードを追加

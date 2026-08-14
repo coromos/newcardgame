@@ -6,6 +6,98 @@ using System;
 using System.Linq;
 using Photon.Pun;
 
+public class CEM5 : CardEffectManager
+{
+    public CEM5() : base()
+    {
+        CardEffect effect = new CEDevote5();
+        buckets[(int)CardEffectType.Devote].Add(effect);
+    }
+    class CEDevote5 : CEDraw
+    {
+        public CEDevote5() : base()
+        {
+            drawCount = 1;
+        }
+    }
+}
+
+public class CEM19 : CardEffectManager
+{
+    public CEM19() : base()
+    {
+        CardEffect effect = new CEAlive19();
+        buckets[(int)CardEffectType.Alive].Add(effect);
+    }
+    class CEAlive19 : CEDraw
+    {
+         public CEAlive19() : base()
+        {
+            drawCount = 1;
+        }
+    }
+}
+
+public class CEM23 : CardEffectManager
+{
+    public CEM23() : base()
+    {
+        CardEffect effect = new CETrash23();
+        buckets[(int)CardEffectType.Trash].Add(effect);
+    }
+    class CETrash23 : CEDraw
+    {
+        public CETrash23() : base()
+        {
+            drawCount = 2;
+        }
+    }
+}
+
+public class CEM26 : CardEffectManager
+{
+    public CEM26() : base()
+    {
+        CardEffect effect = new CEAlive26();
+        buckets[(int)CardEffectType.Alive].Add(effect);
+    }
+
+    class CEAlive26 : CEDamageRandom
+    {
+        public CEAlive26() : base()
+        {
+            damage = 6;
+            cardAmount = 2;
+        }
+    }
+}
+
+public class CEM50 : CardEffectManager
+{
+    public CEM50() : base()
+    {
+        CardEffect effect = new CEAnyGrace50();
+        buckets[(int)CardEffectType.AnyGrace].Add(effect);
+    }
+    class CEAnyGrace50 : CardEffect
+    {
+        int buffth;
+        int buffpw;
+        int buffdv;
+        public CEAnyGrace50() : base()
+        {
+            buffth = 0;
+            buffpw = 2;
+            buffdv = 2;
+        }
+
+        public override IEnumerator Activate()
+        {
+            gameManager.CallBuffCard(CSource, buffth, buffpw, buffdv);
+            yield return null;
+        }
+    }
+}
 
 public class CEM61 : CardEffectManager
 {
@@ -23,6 +115,54 @@ public class CEM61 : CardEffectManager
         {
             damage = 14;
             cardAmount = 1;
+        }
+    }
+}
+
+public class CEM119 : CardEffectManager
+{
+    public CEM119() : base()
+    {
+        CardEffect effect = new CETurnStart119();
+        buckets[(int)CardEffectType.TurnStart].Add(effect);
+    }
+
+    class CETurnStart119 : CardEffect
+    {
+        int hanei;
+        bool ismine;
+        public CETurnStart119() : base()
+        {
+            hanei = 4;
+            ismine = true;
+        }
+
+        public override IEnumerator Activate()
+        {
+            if (gameManager.isPlayerTurn)
+            {
+                gameManager.CallGainThrive(hanei, ismine);
+            }
+            yield return null;
+        }
+    }
+}
+
+public class CEM166 : CardEffectManager
+{
+    public CEM166() : base()
+    {
+        CardEffect effect = new CEAlive166();
+        buckets[(int)CardEffectType.Alive].Add(effect);
+    }
+
+    class CEAlive166 : CECreateCard
+    {
+        public CEAlive166() : base()
+        {
+            cardIds = new int[] { 166 };
+            place = PlaceList.Field;
+            ismine = true;
         }
     }
 }
@@ -63,22 +203,6 @@ public class CEM176 : CardEffectManager
     }
 }
 
-public class CEM19 : CardEffectManager
-{
-    public CEM19() : base()
-    {
-        CardEffect effect = new CEAlive19();
-        buckets[(int)CardEffectType.Alive].Add(effect);
-    }
-    class CEAlive19 : CEDraw
-    {
-         public CEAlive19() : base()
-        {
-            drawCount = 1;
-        }
-    }
-}
-
 public class CEM222 : CardEffectManager
 {
     public CEM222() : base()
@@ -96,87 +220,4 @@ public class CEM222 : CardEffectManager
     }
 }
 
-public class CEM5 : CardEffectManager
-{
-    public CEM5() : base()
-    {
-        CardEffect effect = new CEDevote5();
-        buckets[(int)CardEffectType.Devote].Add(effect);
-    }
-    class CEDevote5 : CEDraw
-    {
-        public CEDevote5() : base()
-        {
-            drawCount = 1;
-        }
-    }
-}
 
-public class CEM23 : CardEffectManager
-{
-    public CEM23() : base()
-    {
-        CardEffect effect = new CETrash23();
-        buckets[(int)CardEffectType.Trash].Add(effect);
-    }
-    class CETrash23 : CEDraw
-    {
-        public CETrash23() : base()
-        {
-            drawCount = 2;
-        }
-    }
-}
-
-public class CEM50 : CardEffectManager
-{
-    public CEM50() : base()
-    {
-        CardEffect effect = new CEAnyGrace50();
-        buckets[(int)CardEffectType.AnyGrace].Add(effect);
-    }
-    class CEAnyGrace50 : CardEffect
-    {
-        int buffth;
-        int buffpw;
-        int buffdv;
-        public CEAnyGrace50() : base()
-        {
-            buffth = 0;
-            buffpw = 2;
-            buffdv = 2;
-        }
-
-        public override IEnumerator Activate()
-        {
-            gameManager.CallBuffCard(CSource, buffth, buffpw, buffdv);
-            yield return null;
-        }
-    }
-}
-
-public class CEM119 : CardEffectManager
-{
-    public CEM119() : base()
-    {
-        CardEffect effect = new CETurnStart119();
-        buckets[(int)CardEffectType.TurnStart].Add(effect);
-    }
-
-    class CETurnStart119 : CardEffect
-    {
-        int hanei;
-        bool ismine;
-        public CETurnStart119() : base()
-        {
-            hanei = 4;
-            ismine = true;
-        }
-
-        public override IEnumerator Activate()
-        {
-            gameManager.CallGainThrive(hanei, ismine);
-            yield return null;
-        }
-    }
-}

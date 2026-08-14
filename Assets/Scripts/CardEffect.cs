@@ -282,23 +282,29 @@ public abstract class CEDamage : CardEffect
     }
 }
 
-public abstract class CERandomDamage : CEDamage
+public abstract class CEDamageRandom : CardEffect
 {
-    public CERandomDamage() : base() { }
+    public int damage;
+    public int cardAmount;
 
+    public CEDamageRamdom() : base()
+    {
+        // 既存の CEDamage の既定動作を維持（相手のフィールドを対象）
+        isPlayerCard = false;
+        cardPlaces = new string[] { "Field" };
+    }
     public override IEnumerator Activate()
     {
-        yield return gameManager.StartCoroutine(RandomDamage(damage, cardAmount));
+        yield return GameManager.instance.StartCoroutine(RandomDamage(damage, cardAmount));
     }
 
-    // 引数にはダメージ量と対象数のみ。フィルタはクラスプロパティから PickupCard に渡す。
     protected IEnumerator RandomDamage(int dmg, int camt)
     {
         if (camt <= 0)
             yield break;
 
         CardController[] allCards = UnityEngine.Object.FindObjectsByType<CardController>(FindObjectsSortMode.None);
-        List<CardController> selectable = PickupCard(
+        List<CardController> selectableCards = PickupCard(
             allCards.ToList(),
             isPlayerCard: isPlayerCard,
             cardPlaces: cardPlaces,
@@ -319,17 +325,17 @@ public abstract class CERandomDamage : CEDamage
             canAttack: canAttack
         );
 
-        if (selectable == null || selectable.Count == 0)
+        if (selectableCards == null || selectableCards.Count == 0)
             yield break;
 
-        int toSelect = Mathf.Min(camt, selectable.Count);
+        int toSelect = Mathf.Min(camt, selectableCards.Count);
         for (int i = 0; i < toSelect; i++)
         {
-            int idx = UnityEngine.Random.Range(0, selectable.Count);
-            var target = selectable[idx];
+            int idx = UnityEngine.Random.Range(0, selectableCards.Count);
+            var target = selectableCards[idx];
             gameManager.CallDamageCard(target, dmg);
             // 重複選択を避けるため除去
-            selectable.RemoveAt(idx);
+            selectableCards.RemoveAt(idx);
             // アニメーション等の余裕を持たせるため1フレーム待機
             yield return null;
         }
@@ -389,6 +395,35 @@ public abstract class CEBuff : CardEffect
             {
                 gameManager.CallBuffCard(targetCards[i], buffth, buffpw, buffdv);
             }
+        }
+        yield break;
+    }
+}
+
+public abstract class CECreateCard : CardEffect
+{
+    public int[] cardIds;
+    public bool ismine;
+    public PlaceList place;
+
+    public CECreateCard() : base()
+    {
+        // 既存の CECreateCard の既定動作を維持（自分のフィールドを対象）
+        isPlayerCard = true;
+        cardPlaces = new string[] { "Field" };
+    }
+
+    public override IEnumerator Activate()
+    {
+        yield return gameManager.StartCoroutine(CreateCard(cardIds));
+    }
+
+    protected IEnumerator CreateCard(int[] cardIds)
+    {
+        for (int i = 0; i < cardIds.Length; i++)
+        {
+            gameManager.CreateCard(cardIds[i], ismine, place);
+            yield return null; // 1フレーム待機してアニメーション等の余裕を持たせる
         }
         yield break;
     }
