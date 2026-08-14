@@ -287,7 +287,7 @@ public abstract class CEDamageRandom : CardEffect
     public int damage;
     public int cardAmount;
 
-    public CEDamageRamdom() : base()
+    public CEDamageRandom() : base()
     {
         // 既存の CEDamage の既定動作を維持（相手のフィールドを対象）
         isPlayerCard = false;
