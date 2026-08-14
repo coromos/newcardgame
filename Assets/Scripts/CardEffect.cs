@@ -8,6 +8,8 @@ using Photon.Pun;
 
 public enum CardEffectType
 {
+    TurnStart,
+    TurnEnd,
     Alive,
     Attack,
     Devote,
@@ -20,6 +22,7 @@ public enum CardEffectType
     AnyBattle,
     AnyDevote,
     AnyGrace,
+    AnyExist,
 }
 
 // カード効果の処理を管理する汎用クラス
@@ -28,6 +31,8 @@ public abstract class CardEffect
     public CardController CSource;
     public CardController CTarget;
     public CardController CRef;
+
+    public GameManager gameManager;
 
     // --- カード絞り込み用プロパティ（共通化） ---
     // デフォルトは既存の挙動を壊さないように安定した値を設定しています。
@@ -53,10 +58,18 @@ public abstract class CardEffect
 
     public CardEffect()
     {
+        if (GameManager.instance != null)
+        {
+            gameManager = GameManager.instance;
+        }
+        else
+        {
+            Debug.LogError("GameManager instance is not found.");
+        }
     }
 
     // 効果関連カードをセットするメソッド
-    public void SetRefCards(CardController source, CardController target, CardController reference)
+    public virtual void SetRefCards(CardController source, CardController target, CardController reference)
     {
         CSource = source;
         CTarget = target;
@@ -147,6 +160,51 @@ public abstract class CardEffect
     }
 }
 
+public abstract class CEExist : CardEffect
+{
+    public CEExist() : base() { }
+
+    public override void SetRefCards(CardController source, CardController target, CardController reference)
+    {
+        base.SetRefCards(source, target, reference);
+    }
+
+    public override IEnumerator Activate()
+    {
+        // ターゲットがこのカードで場にあるとき効果適応
+        if (CSource == CRef)
+        {
+            yield return GameManager.instance.StartCoroutine(Destroyed(CSource));
+        }
+        else if (CSource == CTarget)
+        {
+            yield return GameManager.instance.StartCoroutine(IntoField(CSource));
+        }
+        else
+        {
+            yield return GameManager.instance.StartCoroutine(AffectOther(CTarget));
+        }
+    }
+
+    // ソースカードが場に出たときの処理
+    public virtual IEnumerator IntoField(CardController destroyedCard)
+    {
+        yield break;
+    }
+
+    // ソースカードが破壊されたときの処理
+    public virtual IEnumerator Destroyed(CardController destroyedCard)
+    {
+        yield break;
+    }
+
+    // 他のカードに影響する処理
+    public virtual IEnumerator AffectOther(CardController affectedCard)
+    {
+        yield break;
+    }
+}
+
 public abstract class CEDraw : CardEffect
 {
     public int drawCount;
@@ -164,7 +222,7 @@ public abstract class CEDraw : CardEffect
         for (int i = 0; i < count; i++)
         {
             // プレイヤーのデッキからカードを引いて手札に加える処理を実装
-            GameManager.instance.CallDrawCard(CSource.model.PlayerCard);
+            gameManager.CallDrawCard(CSource.model.PlayerCard);
         }
     }
 }
@@ -210,31 +268,27 @@ public abstract class CEDamage : CardEffect
         );
 
         // StartCardSelection は IEnumerator に変更済み -> 起動して完了を待つ
-        yield return GameManager.instance.StartCoroutine(GameManager.instance.StartCardSelection(selectableCards, camt));
-        List<CardController> targetCards = GameManager.instance.SelectionResults;
+        yield return gameManager.StartCoroutine(gameManager.StartCardSelection(selectableCards, camt));
+        List<CardController> targetCards = gameManager.SelectionResults;
 
         if (targetCards != null)
         {
             for (int i = 0; i < targetCards.Count; i++)
             {
-                GameManager.instance.CallDamageCard(targetCards[i], dmg);
+                gameManager.CallDamageCard(targetCards[i], dmg);
             }
         }
         yield break;
     }
 }
 
-/// <summary>
-/// 指定されたフィルタに合致するカードからランダムに対象を選びダメージを与える効果クラス。
-/// フィルタは基底クラス `CardEffect` の公開プロパティ（isPlayerCard / cardPlaces / ...）を使用します。
-/// </summary>
-public class CERandomDamage : CEDamage
+public abstract class CERandomDamage : CEDamage
 {
     public CERandomDamage() : base() { }
 
     public override IEnumerator Activate()
     {
-        yield return GameManager.instance.StartCoroutine(RandomDamage(damage, cardAmount));
+        yield return gameManager.StartCoroutine(RandomDamage(damage, cardAmount));
     }
 
     // 引数にはダメージ量と対象数のみ。フィルタはクラスプロパティから PickupCard に渡す。
@@ -273,7 +327,7 @@ public class CERandomDamage : CEDamage
         {
             int idx = UnityEngine.Random.Range(0, selectable.Count);
             var target = selectable[idx];
-            GameManager.instance.CallDamageCard(target, dmg);
+            gameManager.CallDamageCard(target, dmg);
             // 重複選択を避けるため除去
             selectable.RemoveAt(idx);
             // アニメーション等の余裕を持たせるため1フレーム待機
@@ -300,7 +354,7 @@ public abstract class CEBuff : CardEffect
 
     public override IEnumerator Activate()
     {
-        yield return GameManager.instance.StartCoroutine(Buff(buffth, buffpw, buffdv, cardAmount));
+        yield return gameManager.StartCoroutine(Buff(buffth, buffpw, buffdv, cardAmount));
     }
 
     protected IEnumerator Buff(int buffth, int buffpw, int buffdv, int camt)
@@ -327,13 +381,13 @@ public abstract class CEBuff : CardEffect
             canAttack: canAttack
         );
 
-        yield return GameManager.instance.StartCoroutine(GameManager.instance.StartCardSelection(selectableCards, camt));
-        List<CardController> targetCards = GameManager.instance.SelectionResults;
+        yield return gameManager.StartCoroutine(gameManager.StartCardSelection(selectableCards, camt));
+        List<CardController> targetCards = gameManager.SelectionResults;
         if (targetCards != null)
         {
             for (int i = 0; i < targetCards.Count; i++)
             {
-                GameManager.instance.CallBuffCard(targetCards[i], buffth, buffpw, buffdv);
+                gameManager.CallBuffCard(targetCards[i], buffth, buffpw, buffdv);
             }
         }
         yield break;

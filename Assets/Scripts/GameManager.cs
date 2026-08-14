@@ -328,6 +328,9 @@ public partial class GameManager : MonoBehaviourPun
     {
         Debug.Log("Playerのターン");
 
+        // ターン開始時効果と状態処理
+        ProcessTurnStart();
+
         //CardController[] playerFieldCardList = playerField.GetComponentsInChildren<CardController>();
         //SetAttackableFieldCard(playerFieldCardList, true);
         CallSetAttackableFieldCard(true);
@@ -490,13 +493,17 @@ public partial class GameManager : MonoBehaviourPun
         if (attackCard != null && defenceCard != null)
         {
             UseCardEffect(attackCard, defenceCard, CardEffectType.Attack);
+            UseCardEffect(defenceCard, attackCard, CardEffectType.Battle);
+            UseCardEffect(attackCard, defenceCard, CardEffectType.AnyAttack);
+            UseCardEffect(defenceCard, attackCard, CardEffectType.AnyBattle);
+            StartCoroutine(ProcessEffectQueueAll());
             // ダメージ計算
             defenceCard.GrantDamage(attackCard.model.GetPower());
             attackCard.GrantDamage(defenceCard.model.GetPower());
 
             // ダメージが耐久値を超えた場合は破壊
-            attackCard.DamageDestroy();
-            defenceCard.DamageDestroy();
+            attackCard.DamageDestroy(defenceCard);
+            defenceCard.DamageDestroy(attackCard);
 
             // 攻撃パネルを非表示にし、攻撃不可にする
             attackCard.view.SetCanAttackPanel(false);
@@ -539,7 +546,7 @@ public partial class GameManager : MonoBehaviourPun
     IEnumerator HandleLocalInterferenceSelection(int targetID)
     {
         List<CardController> selectableCards = new List<CardController>(playerField.GetComponentsInChildren<CardController>());
-        selectableCards = selectableCards.Where(card => (card.model.interference && card.cardInsID != targetID　&& card.model.canITF)).ToList();
+        selectableCards = selectableCards.Where(card => card.model.interference && card.cardInsID != targetID　&& card.model.canITF).ToList();
 
         int resultID = INTERFERENCE_NONE;
 
@@ -653,7 +660,13 @@ public partial class GameManager : MonoBehaviourPun
 
     // リーダーへの攻撃処理
     public void Devote(CardController attackCard)
-    {if (attackCard.model.PlayerCard == true) // プレイヤーカードの場合
+    {
+        // 奉納時効果を発動
+        UseCardEffect(attackCard, attackCard, CardEffectType.Devote);
+        UseCardEffect(attackCard, attackCard, CardEffectType.AnyDevote);
+        StartCoroutine(ProcessEffectQueueAll());
+
+        if (attackCard.model.PlayerCard == true) // プレイヤーカードの場合
         {
             Debug.Log(attackCard.model.name + "がリーダーに奉納");
             CreateThrift(attackCard.model.GetDevote(), true);
@@ -669,7 +682,7 @@ public partial class GameManager : MonoBehaviourPun
 
         // 奉納分のダメージを与えて破壊判定
         attackCard.GrantDamage(attackCard.model.GetDevote());
-        attackCard.DamageDestroy();
+        attackCard.DamageDestroy(attackCard);
         ShowLeaderHP();
     }
 
@@ -748,7 +761,7 @@ public partial class GameManager : MonoBehaviourPun
             CardController[] playerHandCardList = playerHand.GetComponentsInChildren<CardController>();
             foreach (CardController card in playerHandCardList)
             {
-                card.model.canUse = (card.model.cost <= playerSeeds);
+                card.model.canUse = card.model.cost <= playerSeeds;
                 card.view.SetCanUsePanel(card.model.canUse);
             }
         }
@@ -775,17 +788,19 @@ public partial class GameManager : MonoBehaviourPun
             CallReduceSeeds(card.model.cost, true);
             // カード効果を発動
             UseCardEffect(card, card, CardEffectType.Alive);
+            UseCardEffect(card, card, CardEffectType.AnyAlive);
 
             SetPlace(card, PlaceList.Field);
             card.movement.cardParent = playerField;
             card.DropField();
-            StartCoroutine(ProcessEffectQueueOne());
+            StartCoroutine(ProcessEffectQueueAll());
         }
         else if (card.model.cardCategory == CardCategory.Grace)
         {
             CallReduceSeeds(card.model.cost, true);
             UseCardEffect(card, card, CardEffectType.Grace);
-            StartCoroutine(ProcessEffectQueueOne());
+            UseCardEffect(card, card, CardEffectType.AnyGrace);
+            StartCoroutine(ProcessEffectQueueAll());
             card.UseGrace();
         }
     }
@@ -802,9 +817,24 @@ public partial class GameManager : MonoBehaviourPun
 
         if (card != null)
         {
+            String prevPlace = card.model.fieldPosition;
             Transform parentTransform = GetPlace(card.model.PlayerCard, placeName);
             card.transform.SetParent(parentTransform, false);
             card.model.fieldPosition = placeName;
+
+
+            if (prevPlace == PlaceList.Field.ToString() && placeName != PlaceList.Field.ToString())
+            {
+                // フィールドから手札やデッキ、墓地に移動した場合は攻撃不可にする
+                card.model.canAttack = false;
+                card.model.canITF = false;
+                card.view.SetCanAttackPanel(false);
+
+                UseCardEffect(card, card, CardEffectType.AnyExist);
+            }
+            else{
+                UseCardEffect(card, null, CardEffectType.AnyExist);
+            }
         }
     }
 
@@ -846,9 +876,213 @@ public partial class GameManager : MonoBehaviourPun
         return null;
     }
 
-    // ターン開始時処理
-    // 
+    // 破壊通知を受け取り、破壊時効果（CardEffectType.Trash）をキューに登録して処理を開始する
+    // destroyed: 破壊されたカード（効果の発火元）
+    // cause: 破壊の原因となったカード（あれば参照用に渡す）
+    public void NotifyCardDestroyed(CardController destroyed, CardController cause = null)
+    {
+        if (destroyed == null)
+            return;
 
+        if (!isPlayerTurn)
+            return;
+
+        // 破壊されたカードを効果の発火元として登録する
+        UseCardEffect(destroyed, cause, CardEffectType.Trash);
+
+        // 直ちにキュー内の効果を順次処理する
+        StartCoroutine(ProcessEffectQueueAll());
+    }
+
+    // ターン開始時処理
+    // ターン開始時効果を実行し、状態処理と毒ダメージを適用する
+    void ProcessTurnStart()
+    {
+        // 自分のフィールドカードのターン開始時効果を実行
+        photonView.RPC("ExecuteTurnStartEffectsRPC", RpcTarget.All, true);
+        // 敵のフィールドカードのターン開始時効果を実行
+        photonView.RPC("ExecuteTurnStartEffectsRPC", RpcTarget.All, false);
+
+        // 全カードの状態処理（持続ターン数のデクリメント、一時バフのリセット）
+        photonView.RPC("ProcessCardStatesRPC", RpcTarget.All, true);
+        photonView.RPC("ProcessCardStatesRPC", RpcTarget.All, false);
+
+    }
+
+    // ターン開始時効果を実行する RPC
+    [PunRPC]
+    void ExecuteTurnStartEffectsRPC(bool isMine, PhotonMessageInfo info)
+    {
+        CardController[] fieldCards;
+        if (isMine)
+        {
+            fieldCards = playerField.GetComponentsInChildren<CardController>();
+        }
+        else
+        {
+            fieldCards = enemyField.GetComponentsInChildren<CardController>();
+        }
+
+        // フィールドカードを場に出た順に処理
+        foreach (CardController card in fieldCards)
+        {
+            UseCardEffect(card, card, CardEffectType.TurnStart);
+        }
+
+        // 効果キューをすべて処理
+        StartCoroutine(ProcessEffectQueueAll());
+    }
+
+    // カードの状態を処理する RPC（持続ターン数のデクリメント、一時バフのリセット）
+    [PunRPC]
+    void ProcessCardStatesRPC(bool isMine, PhotonMessageInfo info)
+    {
+        CardController[] allFieldCards;
+        if (isMine)
+        {
+            allFieldCards = playerField.GetComponentsInChildren<CardController>();
+        }
+        else
+        {
+            allFieldCards = enemyField.GetComponentsInChildren<CardController>();
+        }
+
+        foreach (CardController card in allFieldCards)
+        {
+            CardModel model = card.model;
+
+            // 持続ターン数をデクリメント
+            if (model.Curse > 0)
+            {
+                model.Curse--;
+                if (model.Curse == 0)
+                {
+                    model.Curse = -1;
+                    // Curseが0になったカードを破壊
+                    card.DamageDestroy(null);
+                }
+            }
+
+            if (model.vulnerable > 0)
+            {
+                model.vulnerable--;
+                if (model.vulnerable <= 0)
+                {
+                    model.vulnerable = 0;
+                }
+            }
+
+            if (model.frail > 0)
+            {
+                model.frail--;
+                if (model.frail <= 0)
+                {
+                    model.frail = 0;
+                }
+            }
+
+            // スタン状態を処理（ただし0未満にはしない）
+            if (model.stayturn > 0)
+            {
+                model.stayturn--;
+            }
+        }
+    }
+
+    // 毒などの状態ダメージを適用する RPC
+    [PunRPC]
+    void ApplyStateAutoDamageRPC(bool isMine, PhotonMessageInfo info)
+    {
+        CardController[] allFieldCards;
+        if (isMine)
+        {
+            allFieldCards = playerField.GetComponentsInChildren<CardController>();
+        }
+        else
+        {
+            allFieldCards = enemyField.GetComponentsInChildren<CardController>();
+        }
+
+        foreach (CardController card in allFieldCards)
+        {
+            CardModel model = card.model;
+
+            // 毒ダメージを適用
+            if (model.Poison > 0)
+            {
+                card.GrantDamage(model.Poison);
+                // 毒ダメージによる破壊判定
+                card.DamageDestroy(null);
+            }
+        }
+    }
+
+    // ターン終了処理のメイン
+    void ProcessTurnEnd()
+    {
+        // 自分のフィールドカードのターン終了時効果を実行
+        photonView.RPC("ExecuteTurnEndEffectsRPC", RpcTarget.All, true);
+        // 敵のフィールドカードのターン終了時効果を実行
+        photonView.RPC("ExecuteTurnEndEffectsRPC", RpcTarget.All, false);
+
+        // ターン終了時の状態処理（一時バフのリセットなど）を実行
+        photonView.RPC("ProcessCardEndStatesRPC", RpcTarget.All, true);
+        photonView.RPC("ProcessCardEndStatesRPC", RpcTarget.All, false);
+
+        // ターン終了時の状態ダメージを適用（毒など） - 効果処理と一時バフ解除の後に実行
+        photonView.RPC("ApplyStateAutoDamageRPC", RpcTarget.All, true);
+        photonView.RPC("ApplyStateAutoDamageRPC", RpcTarget.All, false);
+    }
+
+    // ターン終了時効果を実行する RPC
+    [PunRPC]
+    void ExecuteTurnEndEffectsRPC(bool isMine, PhotonMessageInfo info)
+    {
+        CardController[] fieldCards;
+        if (isMine)
+        {
+            fieldCards = playerField.GetComponentsInChildren<CardController>();
+        }
+        else
+        {
+            fieldCards = enemyField.GetComponentsInChildren<CardController>();
+        }
+
+        // フィールドカードを場に出た順に処理
+        foreach (CardController card in fieldCards)
+        {
+            UseCardEffect(card, card, CardEffectType.TurnEnd);
+        }
+
+        // 効果キューをすべて処理
+        StartCoroutine(ProcessEffectQueueAll());
+    }
+
+    // ターン終了時の状態処理 RPC（主に一時バフのリセット）
+    [PunRPC]
+    void ProcessCardEndStatesRPC(bool isMine, PhotonMessageInfo info)
+    {
+        CardController[] allFieldCards;
+        if (isMine)
+        {
+            allFieldCards = playerField.GetComponentsInChildren<CardController>();
+        }
+        else
+        {
+            allFieldCards = enemyField.GetComponentsInChildren<CardController>();
+        }
+
+        foreach (CardController card in allFieldCards)
+        {
+            CardModel model = card.model;
+
+            // 一時バフをリセット（ターン終了時にクリア）
+            model.tmpCost = 0;
+            model.tmpToughness = 0;
+            model.tmpPower = 0;
+            model.tmpDevote = 0;
+        }
+    }
 
     // ターン終了時処理
     // 毒処理
@@ -856,6 +1090,7 @@ public partial class GameManager : MonoBehaviourPun
     // 一時バフのリセット
     void TurnEnd()
     {
-
+        // ターン終了フローを開始（RPCで各クライアントの終了処理を呼び出す）
+        ProcessTurnEnd();
     }
 }

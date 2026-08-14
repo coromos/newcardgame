@@ -10,14 +10,26 @@ public class CardController : MonoBehaviourPun
     public CardModel model; // カードのデータを管理
     public CardMovement movement;  // カードの移動・ドラッグ操作を管理
     public CardEffectManager cem; // カード効果の管理クラスへの参照
+    public GameManager gameManager; // ゲームマネージャーへの参照
     public int cardInsID;
     public bool canSelect = false;
+
+    // 破壊処理の完了待ちを示すフラグ（破壊通知後、最終化されるまでは true）
+    public bool pendingDestroy = false;
 
     // コンポーネントの初期化
     private void Awake()
     {
         view = GetComponent<CardView>();
         movement = GetComponent<CardMovement>();
+        if (GameManager.instance != null)
+        {
+            gameManager = GameManager.instance;
+        }
+        else
+        {
+            Debug.LogError("GameManager instance is not found.");
+        }
     }
 
     // カードの初期化（データと見た目のセットアップ）
@@ -37,7 +49,7 @@ public class CardController : MonoBehaviourPun
             cem = new CardEffectManager();
         }
 
-            view.Show(model);
+        view.Show(model);
     }
 
     // カードにダメージを与える
@@ -48,20 +60,34 @@ public class CardController : MonoBehaviourPun
     }
 
     // カードを破棄する
-    public void DestroyCard()
+    // - ここでは「論理的破壊」（fieldPosition の更新、破壊通知、視覚的移動等）を行う。
+    // - cardInsID のクリア（最終化）は GameManager 側のバッチ最終化に委ねる（pendingDestroy フラグで管理）。
+    public void DestroyCard(CardController card)
     {
-        cardInsID = 0;
-        Transform setplace = GameManager.instance.GetComponent<Transform>();
-        transform.SetParent(setplace, false);
+        // まずフィールド位置を Trash にし、他の効果が参照可能な状態にする
         model.fieldPosition = PlaceList.Trash.ToString();
+
+        // 破壊が進行中であることを示すフラグを立てる
+        pendingDestroy = true;
+
+        // 破壊時効果を GameManager に通知して効果キューへ登録する
+        gameManager.NotifyCardDestroyed(this, card);
+
+        // オブジェクトを待機場所へ移動（視覚的な移動はローカルで行う）
+        Transform setplace = gameManager != null ? gameManager.GetComponent<Transform>() : this.transform.root;
+        transform.SetParent(setplace, false);
+
+        gameManager.UseCardEffect(this, this, CardEffectType.AnyExist);
+
+        // cardInsID はここではクリアしない（効果実行が完了してから GameManager 側でクリアする）
     }
 
     // ダメージが耐久値を超えた場合にカードを破棄する
-    public void DamageDestroy()
+    public void DamageDestroy(CardController card)
     {
         if (model.damage >= model.toughness)
         {
-            DestroyCard();
+            DestroyCard(card);
         }
     }
 
@@ -77,6 +103,6 @@ public class CardController : MonoBehaviourPun
     // Graceカードの使用処理
     public void UseGrace()
     {
-        DestroyCard();
+        DestroyCard(null);
     }
 }

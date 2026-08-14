@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System;
 using System.Linq;
 using Photon.Pun;
 
@@ -13,8 +12,14 @@ public partial class GameManager
     // FIFO キュー（先入れ先出し）
     private Queue<CardEffect> effectCallQueue = new Queue<CardEffect>();
 
+    // 破壊最終化待ちカードの集合（cardInsID を保持）
+    private HashSet<int> pendingDestroyIds = new HashSet<int>();
+
     public void UseCardEffect(CardController mainCard, CardController refCard, CardEffectType type)
     {
+        if (!isPlayerTurn)
+            return;
+        
         string typeName = type.ToString();
 
         // Anyが付いている場合の処理
@@ -50,6 +55,9 @@ public partial class GameManager
     // 即時実行は行わず、実行予定を FIFO キューへ追加する
     public void ApplyCardEffect(CardController effectSourceCard, CardController targetCard, CardController refCard, CardEffectType type)
     {
+        if (!isPlayerTurn)
+            return;
+
         if (effectSourceCard == null)
             return;
 
@@ -72,13 +80,21 @@ public partial class GameManager
         yield return StartCoroutine(call.Activate());
     }
 
+    // 多重呼び出しを防止するため、キュー処理中はフラグを立てる
+    public bool isProcessingEffectQueue = false;
     // キュー内をすべて実行（FIFO） — コルーチン化
     public IEnumerator ProcessEffectQueueAll()
     {
+        if (isProcessingEffectQueue)
+            yield break; // すでに処理中なら何もしない
+        isProcessingEffectQueue = true;
         while (effectCallQueue.Count > 0)
         {
             yield return StartCoroutine(ProcessEffectQueueOne());
         }
+        isProcessingEffectQueue = false;
+        // 保留中の破壊を最終化
+        BatchFinalizePendingDestroys();
     }
 
     // コルーチンで間隔をあけて処理（必要なら使用）
@@ -172,6 +188,43 @@ public partial class GameManager
         yield break;
     }
 
+    
+
+    // 一括で保留中の破壊を最終化するための処理
+    // - 最終化は各クライアントで cardInsID をクリアする RPC を送信して行う
+    void BatchFinalizePendingDestroys()
+    {
+        if (pendingDestroyIds == null || pendingDestroyIds.Count == 0)
+            return;
+
+        // コピーしてクリア（重複実行防止のため）
+        var idsToFinalize = pendingDestroyIds.ToArray();
+        pendingDestroyIds.Clear();
+
+        // 各 ID を全クライアントに通知して最終化させる
+        foreach (var id in idsToFinalize)
+        {
+            photonView.RPC("FinalizeDestroyRPC", RpcTarget.All, id);
+        }
+    }
+
+    // RPC ハンドラ：最終化（cardInsID のクリア）を全クライアントで行う
+    [PunRPC]
+    void FinalizeDestroyRPC(int targetCardInsID, PhotonMessageInfo info)
+    {
+        // 対象カードが見つかればインスタンスID をクリアし pending フラグを解除する
+        var target = FindCardByInstanceID(targetCardInsID);
+        if (target == null)
+        {
+            // 既に見つからない場合は無視
+            return;
+        }
+
+        // cardInsID を 0 にして最終化完了とする
+        target.cardInsID = 0;
+        target.pendingDestroy = false;
+    }
+
     // 指定のカードにダメージを与えるメソッド
     // --- ここから RPC で共有するダメージ処理メソッド群 ---
 
@@ -207,7 +260,7 @@ public partial class GameManager
             return;
 
         card.GrantDamage(damage);
-        card.DamageDestroy();
+        card.DamageDestroy(null);
     }
 
     // --- RPC ダメージ処理ここまで ---
@@ -241,4 +294,18 @@ public partial class GameManager
         card.model.flnDevote += devoteBuff;
         card.view.Show(card.model);
     }
+
+    // 繁栄を取得するメソッド
+    public void CallGainThrive(int amount, bool ismine)
+    {
+        photonView.RPC("RPC_GainThrive", RpcTarget.All, amount, ismine);
+    }
+
+    [PunRPC]
+    void RPC_GainThrive(int amount, bool isMine, PhotonMessageInfo info)
+    {
+        CreateThrift(amount, isMine);
+    }
+    // --- RPC ダメージ処理ここまで ---
+
 }
