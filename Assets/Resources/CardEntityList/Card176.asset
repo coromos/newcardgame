@@ -18,7 +18,7 @@ MonoBehaviour:
   cardAttribute: 0
   cardStains: 
   cardRarity: 1
-  cost: 6
+  cost: 8
   toughness: 30
   power: 15
   devote: 10
@@ -31,3 +31,6 @@ MonoBehaviour:
   homeostasis: 0
   alone: 0
   noaction: 0
+  nodevote: 0
+  aplDmg: 0
+  recDmg: 0

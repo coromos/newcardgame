@@ -73,6 +73,7 @@ MonoBehaviour:
   - ProcessCardEndStatesRPC
   - ProcessCardStatesRPC
   - RPC_GainThrive
+  - DecideFirstTurnRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

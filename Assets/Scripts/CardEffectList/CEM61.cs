@@ -23,17 +23,42 @@ public class CEM5 : CardEffectManager
 }
 
 public class CEM19 : CardEffectManager
+/*
+# ハイエナ
+## 効果
+- 1.【宣誓】1枚ドロー。
+2.このアニマの捧身時、相手の繁栄を-5。
+*/
 {
     public CEM19() : base()
     {
         CardEffect effect = new CEAlive19();
         buckets[(int)CardEffectType.Alive].Add(effect);
+        effect = new CEDevote19();
+        buckets[(int)CardEffectType.Devote].Add(effect);
     }
     class CEAlive19 : CEDraw
     {
          public CEAlive19() : base()
         {
             drawCount = 1;
+        }
+    }
+    
+    class CEDevote19 : CardEffect
+    {
+        int hanei;
+        bool ismine;
+        public CEDevote19() : base()
+        {
+            hanei = -5;
+            ismine = false;
+        }
+
+        public override IEnumerator Activate()
+        {
+            gameManager.CallGainThrive(hanei, !ismine ^ CSource.model.PlayerCard);
+            yield return null;
         }
     }
 }
@@ -68,6 +93,31 @@ public class CEM26 : CardEffectManager
         {
             damage = 6;
             cardAmount = 2;
+        }
+    }
+}
+
+/*
+# 地響き
+
+## 効果
+- 1.相手の場のカード全てに16ダメージ。
+*/
+public class CEM27 : CardEffectManager
+{
+    public CEM27() : base()
+    {
+        CardEffect effect = new CEGrace27();
+        buckets[(int)CardEffectType.Grace].Add(effect);
+    }
+
+    class CEGrace27 : CEDamageRandom
+    {
+        public CEGrace27() : base()
+        {
+            damage = 16;
+            cardAmount = 5;
+            cardCategory = new CardCategory[] { CardCategory.Anima, CardCategory.Ornament };
         }
     }
 }
@@ -141,6 +191,38 @@ public class CEM73 : CardEffectManager
     }
 }
 
+public class CEM77 : CardEffectManager
+/*
+# カタパルト
+## 効果
+- 1.自分のターン開始時、ランダムな相手の場のアニマ1体に7ダメージ。
+*/
+{
+    public CEM77() : base()
+    {
+        CardEffect effect = new CETurnStart77();
+        buckets[(int)CardEffectType.TurnStart].Add(effect);
+    }
+
+    class CETurnStart77 : CEDamageRandom
+    {
+        public CETurnStart77() : base()
+        {
+            damage = 7;
+            cardAmount = 1;
+            cardCategory = new CardCategory[] { CardCategory.Anima };
+        }
+
+        public override IEnumerator Activate()
+        {
+            if (!(gameManager.isPlayerTurn ^ CSource.model.PlayerCard))
+            {
+                yield return base.Activate();
+            }
+        }
+    }
+}
+
 public class CEM79 : CardEffectManager
 /*
 尖塔：自分のターン終了時、自分の繁栄を+4。殉難：自分の繁栄を-7。
@@ -189,30 +271,6 @@ public class CEM79 : CardEffectManager
         {
             gameManager.CallGainThrive(hanei, !ismine ^ CSource.model.PlayerCard);
             yield return null;
-        }
-    }
-}
-
-public class CEM77 : CardEffectManager
-/*
-# カタパルト
-## 効果
-- 1.自分のターン開始時、ランダムな相手の場のアニマ1体に7ダメージ。
-*/
-{
-    public CEM77() : base()
-    {
-        CardEffect effect = new CETurnEnd77();
-        buckets[(int)CardEffectType.TurnEnd].Add(effect);
-    }
-
-    class CETurnEnd77 : CEDamageRandom
-    {
-        public CETurnEnd77() : base()
-        {
-            damage = 7;
-            cardAmount = 1;
-            cardCategory = new CardCategory[] { CardCategory.Anima };
         }
     }
 }

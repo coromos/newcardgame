@@ -434,6 +434,11 @@ public partial class GameManager : MonoBehaviourPun
             return;
         }
 
+        if (playerTree >= 13)
+        {
+            return;
+        }
+
         if (growTreeFlag == 0 && playerSeeds >= 2)
         {
             // 初回
@@ -1065,6 +1070,17 @@ public partial class GameManager : MonoBehaviourPun
                 card.GrantDamage(model.Poison);
                 // 毒ダメージによる破壊判定
                 card.DamageDestroy(null);
+            }
+            // 呪いをカウントダウンし、0になったら破壊
+            if (model.Curse > 0)
+            {
+                model.Curse--;
+                if (model.Curse == 0)
+                {
+                    model.Curse = -1;
+                    // Curseが0になったカードを破壊
+                    card.DamageDestroy(null);
+                }
             }
         }
     }
