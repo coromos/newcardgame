@@ -148,12 +148,7 @@ public partial class GameManager : MonoBehaviourPun
     void StartGame()
     {
         //オーナーなら、cardInsIDを0から、オーナー以外ならintの最低値から始める
-        if (PhotonNetwork.IsMasterClient)
-        {
-            DecideFirstTurn();
-        }
-        enemyLeaderHP = 0;
-        playerLeaderHP = 0;
+        cardInsID = PhotonNetwork.IsMasterClient ? 1 : int.MinValue;
 
         // デッキを初期化
         DeckEntity[] deckEntities = Resources.LoadAll<DeckEntity>("Decks");
@@ -172,15 +167,13 @@ public partial class GameManager : MonoBehaviourPun
             CreateCard(deck[i], true, PlaceList.Deck);
         }
 
-        playerTree = 4;
-
-        enemyTree = 4;
-
         // 初期手札の配布
         SetStartHand();
 
-        // ターン処理開始
-        StartCoroutine(TurnCalc());
+        if (PhotonNetwork.IsMasterClient)
+        {
+            DecideFirstTurn();
+        }
     }
 
     // ランダムに先行・後攻を決定する（マスタークライアントが決定し、全員に通知する）
@@ -199,7 +192,6 @@ public partial class GameManager : MonoBehaviourPun
         // 先行はInstantIDを1から後攻はintの最低値から始める
         if (isPlayerTurn)
         {
-            cardInsID = 1;
             playerTree = 4;
             playerSeeds = 0;
             playerLeaderHP = 0;
@@ -209,7 +201,6 @@ public partial class GameManager : MonoBehaviourPun
         }
         else
         {
-            cardInsID = int.MinValue;
             playerTree = 4;
             playerSeeds = 1;
             playerLeaderHP = 0;
@@ -217,6 +208,11 @@ public partial class GameManager : MonoBehaviourPun
             enemySeeds = 0;
             enemyLeaderHP = 0;
         }
+        // 表示を更新
+        ShowSeed();
+        ShowLeaderHP();
+        // ターン処理開始
+        StartCoroutine(TurnCalc());
     }
 
     public void CreateCard(int cardID, bool myCard, PlaceList place)
