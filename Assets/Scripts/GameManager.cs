@@ -150,12 +150,7 @@ public partial class GameManager : MonoBehaviourPun
         //オーナーなら、cardInsIDを0から、オーナー以外ならintの最低値から始める
         if (PhotonNetwork.IsMasterClient)
         {
-            isPlayerTurn = true;
-            cardInsID = 1;
-        }
-        else
-        {
-            cardInsID = System.Int32.MinValue;
+            DecideFirstTurn();
         }
         enemyLeaderHP = 0;
         playerLeaderHP = 0;
@@ -177,10 +172,8 @@ public partial class GameManager : MonoBehaviourPun
             CreateCard(deck[i], true, PlaceList.Deck);
         }
 
-        playerSeeds = 0;
         playerTree = 4;
 
-        enemySeeds = 0;
         enemyTree = 4;
 
         // 初期手札の配布
@@ -188,6 +181,42 @@ public partial class GameManager : MonoBehaviourPun
 
         // ターン処理開始
         StartCoroutine(TurnCalc());
+    }
+
+    // ランダムに先行・後攻を決定する（マスタークライアントが決定し、全員に通知する）
+    public void DecideFirstTurn()
+    {
+        bool firstTurn = UnityEngine.Random.value < 0.5f;
+        photonView.RPC("DecideFirstTurnRPC", RpcTarget.All, firstTurn);
+    }
+
+    [PunRPC]
+    void DecideFirstTurnRPC(bool firstTurn)
+    {
+        isPlayerTurn = firstTurn ^ PhotonNetwork.IsMasterClient;
+        // 先行はツリー4、シード0、リーダーHP0から始める
+        // 後攻はツリー4、シード1、リーダーHP0から始める
+        // 先行はInstantIDを1から後攻はintの最低値から始める
+        if (isPlayerTurn)
+        {
+            cardInsID = 1;
+            playerTree = 4;
+            playerSeeds = 0;
+            playerLeaderHP = 0;
+            enemyTree = 4;
+            enemySeeds = 1;
+            enemyLeaderHP = 0;
+        }
+        else
+        {
+            cardInsID = int.MinValue;
+            playerTree = 4;
+            playerSeeds = 1;
+            playerLeaderHP = 0;
+            enemyTree = 4;
+            enemySeeds = 0;
+            enemyLeaderHP = 0;
+        }
     }
 
     public void CreateCard(int cardID, bool myCard, PlaceList place)
@@ -645,7 +674,7 @@ public partial class GameManager : MonoBehaviourPun
             return;
         }
 
-        photonView.RPC("SelectInterferenceRPC", RpcTarget.All, 0);
+        photonView.RPC("SelectInterferenceRPC", RpcTarget.All, 0, attackCard.cardInsID);
 
         // 選択結果到着を待つ（ブロッキングしない）
         StartCoroutine(CardDevoteCoroutine(attackCard));
