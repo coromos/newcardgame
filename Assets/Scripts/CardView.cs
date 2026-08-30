@@ -8,7 +8,7 @@ public class CardView : MonoBehaviour
 {
     [SerializeField] Text costText, toughnessText, powerText, devoteText;
     [SerializeField] Image iconImage;
-    [SerializeField] GameObject canAttackPanel, canUsePanel;
+    [SerializeField] GameObject canAttackPanel, canUsePanel, SelectedPanel;
 
     // カードデータをUIに反映
     public void Show(CardModel cardModel)

@@ -7,12 +7,14 @@ using DG.Tweening;
 // カードのドラッグ・移動・アニメーションを管理するクラス
 public class CardMovement : MonoBehaviour, 
     IDragHandler, IBeginDragHandler, IEndDragHandler,
-    IPointerEnterHandler, IPointerExitHandler
+    IPointerEnterHandler, IPointerExitHandler,
+    IPointerClickHandler
 {
     public Vector3 position;
     public Transform cardParent; // ドラッグ前の親Transform
     CardController card;         // カードのコントローラー
     bool canDrag = true;         // ドラッグ可能かどうか
+    GameObject DispDard;      // ドラッグ中のカードの表示用オブジェクト
 
     // ドラッグ開始時の処理
     public void OnBeginDrag(PointerEventData eventData)
@@ -116,5 +118,13 @@ public class CardMovement : MonoBehaviour,
     {
         Vector3 defaultscale = new Vector3(1f, 1f, 1f);
         transform.DOScale(defaultscale, 0.1f);
+    }
+    
+    // クリックされたときに呼び出されるメソッド
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        DispDard = GameManager.instance.DispCard;
+        DispDard.SetActive(true);
+        DispDard.GetComponent<CardView>().Show(card.model);
     }
 }

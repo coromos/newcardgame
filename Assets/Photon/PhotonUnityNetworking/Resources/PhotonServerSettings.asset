@@ -66,6 +66,13 @@ MonoBehaviour:
   - InterferenceRPC
   - SetAttackableFieldCardRPC
   - SelectInterferenceResultRPC
+  - ApplyStateAutoDamageRPC
+  - ExecuteTurnEndEffectsRPC
+  - ExecuteTurnStartEffectsRPC
+  - FinalizeDestroyRPC
+  - ProcessCardEndStatesRPC
+  - ProcessCardStatesRPC
+  - RPC_GainThrive
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

@@ -12,7 +12,8 @@ public enum PlaceList
     Field,
     Hand,
     Deck,
-    Trash
+    Trash,
+    Outer
 }
 
 
@@ -24,7 +25,7 @@ public partial class GameManager : MonoBehaviourPun
     [SerializeField] Text playerLeaderHPText, enemyLeaderHPText;
     [SerializeField] Text playerSeedsText, enemySeedsText;
     [SerializeField] Text playerTreeText, enemyTreeText;
-    [SerializeField] GameObject NoCard;
+    [SerializeField] public GameObject NoCard, DispCard;
 
     public bool isPlayerTurn = false;
     List<int> deck;

@@ -400,6 +400,71 @@ public abstract class CEBuff : CardEffect
     }
 }
 
+public abstract class CEBuffRandom : CardEffect
+{
+    public int buffth;
+    public int buffpw;
+    public int buffdv;
+    public int cardAmount;
+
+    public CEBuffRandom() : base()
+    {
+        // 既存の CEBuff の既定動作を維持（自分のフィールドを対象）
+        isPlayerCard = true;
+        cardPlaces = new string[] { "Field" };
+    }
+
+    public override IEnumerator Activate()
+    {
+        yield return gameManager.StartCoroutine(RandomBuff(buffth, buffpw, buffdv, cardAmount));
+    }
+
+    protected IEnumerator RandomBuff(int buffth, int buffpw, int buffdv, int camt)
+    {
+        if (camt <= 0)
+            yield break;
+
+        CardController[] allCards = UnityEngine.Object.FindObjectsByType<CardController>(FindObjectsSortMode.None);
+        List<CardController> selectableCards = PickupCard(
+            allCards.ToList(),
+            isPlayerCard: isPlayerCard,
+            cardPlaces: cardPlaces,
+            cardCategory: cardCategory,
+            cardAttribute: cardAttribute,
+            cardStain: cardStain,
+            minCost: minCost,
+            maxCost: maxCost,
+            listCost: listCost,
+            minToughness: minToughness,
+            maxToughness: maxToughness,
+            minPower: minPower,
+            maxPower: maxPower,
+            minDevote: minDevote,
+            maxDevote: maxDevote,
+            minDamage: minDamage,
+            maxDamage: maxDamage,
+            canAttack: canAttack
+        );
+
+        if (selectableCards == null || selectableCards.Count == 0)
+            yield break;
+
+        int toSelect = Mathf.Min(camt, selectableCards.Count);
+        for (int i = 0; i < toSelect; i++)
+        {
+            int idx = UnityEngine.Random.Range(0, selectableCards.Count);
+            var target = selectableCards[idx];
+            gameManager.CallBuffCard(target, buffth, buffpw, buffdv);
+            // 重複選択を避けるため除去
+            selectableCards.RemoveAt(idx);
+            // アニメーション等の余裕を持たせるため1フレーム待機
+            yield return null;
+        }
+
+        yield break;
+    }
+}
+
 public abstract class CECreateCard : CardEffect
 {
     public int[] cardIds;

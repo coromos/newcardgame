@@ -119,6 +119,104 @@ public class CEM61 : CardEffectManager
     }
 }
 
+public class CEM73 : CardEffectManager
+/*
+防衛システム：【妨害】トークン召喚
+*/
+{
+    public CEM73() : base()
+    {
+        CardEffect effect = new CEGrace73();
+        buckets[(int)CardEffectType.Grace].Add(effect);
+    }
+
+    class CEGrace73 : CECreateCard
+    {
+        public CEGrace73() : base()
+        {
+            cardIds = new int[] { 71, 71 };
+            place = PlaceList.Field;
+            ismine = true;
+        }
+    }
+}
+
+public class CEM79 : CardEffectManager
+/*
+尖塔：自分のターン終了時、自分の繁栄を+4。殉難：自分の繁栄を-7。
+*/
+{
+    public CEM79() : base()
+    {
+        CardEffect effect = new CETurnEnd79();
+        buckets[(int)CardEffectType.TurnEnd].Add(effect);
+
+        CardEffect effect2 = new CETrash79();
+        buckets[(int)CardEffectType.Trash].Add(effect2);
+    }
+
+    class CETurnEnd79 : CardEffect
+    {
+        int hanei;
+        bool ismine;
+        public CETurnEnd79() : base()
+        {
+            hanei = 4;
+            ismine = true;
+        }
+
+        public override IEnumerator Activate()
+        {
+            if (!(gameManager.isPlayerTurn ^ CSource.model.PlayerCard))
+            {
+                gameManager.CallGainThrive(hanei, !ismine ^ CSource.model.PlayerCard);
+            }
+            yield return null;
+        }
+    }
+
+    class CETrash79 : CardEffect
+    {
+        int hanei;
+        bool ismine;
+        public CETrash79() : base()
+        {
+            hanei = -7;
+            ismine = true;
+        }
+
+        public override IEnumerator Activate()
+        {
+            gameManager.CallGainThrive(hanei, !ismine ^ CSource.model.PlayerCard);
+            yield return null;
+        }
+    }
+}
+
+public class CEM77 : CardEffectManager
+/*
+# カタパルト
+## 効果
+- 1.自分のターン開始時、ランダムな相手の場のアニマ1体に7ダメージ。
+*/
+{
+    public CEM77() : base()
+    {
+        CardEffect effect = new CETurnEnd77();
+        buckets[(int)CardEffectType.TurnEnd].Add(effect);
+    }
+
+    class CETurnEnd77 : CEDamageRandom
+    {
+        public CETurnEnd77() : base()
+        {
+            damage = 7;
+            cardAmount = 1;
+            cardCategory = new CardCategory[] { CardCategory.Anima };
+        }
+    }
+}
+
 public class CEM119 : CardEffectManager
 {
     public CEM119() : base()
@@ -185,13 +283,16 @@ public class CEM175 : CardEffectManager
 }
 
 public class CEM176 : CardEffectManager
+/*
+時代の啓蒙者：全体バフ
+*/
 {
     public CEM176() : base()
     {
         CardEffect effect = new CEAlive176();
         buckets[(int)CardEffectType.Alive].Add(effect);
     }
-    class CEAlive176 : CEBuff
+    class CEAlive176 : CEBuffRandom
     {
         public CEAlive176() : base()
         {
@@ -199,6 +300,7 @@ public class CEM176 : CardEffectManager
             buffpw = 5;
             buffdv = 5;
             cardAmount = 5;
+            cardCategory = new CardCategory[] { CardCategory.Anima };
         }
     }
 }
