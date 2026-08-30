@@ -1776,6 +1776,14 @@ PrefabInstance:
       propertyPath: m_FontData.m_FontSize
       value: 25
       objectReference: {fileID: 0}
+    - target: {fileID: 4586436573413985872, guid: e1f84a7606c016147a4abd101c884ecb, type: 3}
+      propertyPath: view
+      value: 
+      objectReference: {fileID: 1136921458}
+    - target: {fileID: 4586436573413985872, guid: e1f84a7606c016147a4abd101c884ecb, type: 3}
+      propertyPath: movement
+      value: 
+      objectReference: {fileID: 1136921459}
     - target: {fileID: 5477419001054266562, guid: e1f84a7606c016147a4abd101c884ecb, type: 3}
       propertyPath: m_SizeDelta.x
       value: 102.87
@@ -1930,7 +1938,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8274210558045909516, guid: e1f84a7606c016147a4abd101c884ecb, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8681991193909780643, guid: e1f84a7606c016147a4abd101c884ecb, type: 3}
       propertyPath: sceneViewId
@@ -1951,6 +1959,28 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 8274210558045909516, guid: e1f84a7606c016147a4abd101c884ecb, type: 3}
   m_PrefabInstance: {fileID: 1136921455}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1136921458 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 644335259983375635, guid: e1f84a7606c016147a4abd101c884ecb, type: 3}
+  m_PrefabInstance: {fileID: 1136921455}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1136921457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57b75eb1b89f695409dc7b66d2f5ab70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1136921459 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2837957929965081770, guid: e1f84a7606c016147a4abd101c884ecb, type: 3}
+  m_PrefabInstance: {fileID: 1136921455}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1136921457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9516011d4f612514da6b633f2d309ad4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1160000040
 GameObject:
   m_ObjectHideFlags: 0
@@ -4067,7 +4097,7 @@ SceneRoots:
   m_Roots:
   - {fileID: 519420032}
   - {fileID: 619394802}
+  - {fileID: 821137412}
   - {fileID: 966605118}
   - {fileID: 752793584}
-  - {fileID: 821137412}
   - {fileID: 945731633}

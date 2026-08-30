@@ -14,7 +14,7 @@ public class CardMovement : MonoBehaviour,
     public Transform cardParent; // ドラッグ前の親Transform
     CardController card;         // カードのコントローラー
     bool canDrag = true;         // ドラッグ可能かどうか
-    GameObject DispDard;      // ドラッグ中のカードの表示用オブジェクト
+    GameObject dispDard;      // ドラッグ中のカードの表示用オブジェクト
 
     // ドラッグ開始時の処理
     public void OnBeginDrag(PointerEventData eventData)
@@ -123,8 +123,13 @@ public class CardMovement : MonoBehaviour,
     // クリックされたときに呼び出されるメソッド
     public void OnPointerClick(PointerEventData eventData)
     {
-        DispDard = GameManager.instance.DispCard;
-        DispDard.SetActive(true);
-        DispDard.GetComponent<CardView>().Show(card.model);
+        card = GetComponent<CardController>();
+        if (card.cardInsID == 0)
+        {
+            return;
+        }
+        dispDard = GameManager.instance.DispCard;
+        dispDard.SetActive(true);
+        dispDard.GetComponent<CardView>().Show(card.model);
     }
 }

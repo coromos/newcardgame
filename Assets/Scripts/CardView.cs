@@ -13,6 +13,10 @@ public class CardView : MonoBehaviour
     // カードデータをUIに反映
     public void Show(CardModel cardModel)
     {
+        if (cardModel == null)
+        {
+            return;
+        }
         costText.text = cardModel.GetCost().ToString();
         toughnessText.text = cardModel.GetToughness().ToString();
         powerText.text = cardModel.GetPower().ToString();
@@ -37,5 +41,11 @@ public class CardView : MonoBehaviour
     {
         // ここではcanUsePanelを流用して選択可能状態を表現する
         canUsePanel.SetActive(flag);
+    }
+
+    // 選択済みパネルの表示切替
+    public void SetSelectedPanel(bool flag)
+    {
+        SelectedPanel.SetActive(flag);
     }
 }

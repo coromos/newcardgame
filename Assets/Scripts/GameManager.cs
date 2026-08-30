@@ -471,7 +471,7 @@ public partial class GameManager : MonoBehaviourPun
             && attackCard.model.PlayerCard != defenceCard.model.PlayerCard)
         {
             // 選択要求を全員へ送信し、その後コルーチンで結果を待つ
-            photonView.RPC("SelectInterferenceRPC", RpcTarget.All, defenceCard.cardInsID);
+            photonView.RPC("SelectInterferenceRPC", RpcTarget.All, defenceCard.cardInsID, attackCard.cardInsID);
             StartCoroutine(CardBattleCoroutine(attackCard, defenceCard));
         }
     }
@@ -541,7 +541,7 @@ public partial class GameManager : MonoBehaviourPun
     // 妨害選択要求を受け取る RPC（選択処理は選択権を持つクライアントがローカルコルーチンで実行し、
     // 結果を別 RPC で全員に通知する設計）
     [PunRPC]
-    public void SelectInterferenceRPC(int targetID, PhotonMessageInfo info)
+    public void SelectInterferenceRPC(int targetID, int attackCardID, PhotonMessageInfo info)
     {
         // 初期未決定状態に設定
         selectedInterferenceCardID = INTERFERENCE_UNDECIDED;
@@ -549,7 +549,7 @@ public partial class GameManager : MonoBehaviourPun
         // RPC 発行元が相手であれば、選択 UI を表示してローカルコルーチンで選択を行い結果を送信する
         if (PhotonNetwork.LocalPlayer.ActorNumber != info.Sender.ActorNumber)
         {
-            StartCoroutine(HandleLocalInterferenceSelection(targetID));
+            StartCoroutine(HandleLocalInterferenceSelection(targetID, attackCardID));
         }
         // それ以外のクライアントは結果通知 RPC を受け取るまで待機する（コルーチン側で WaitUntil する）
     }
@@ -562,12 +562,17 @@ public partial class GameManager : MonoBehaviourPun
     }
 
     // 選択権を持つローカルクライアントが選択 UI を表示して結果を RPC で送るコルーチン
-    IEnumerator HandleLocalInterferenceSelection(int targetID)
+    IEnumerator HandleLocalInterferenceSelection(int targetID, int attackCardID)
     {
         List<CardController> selectableCards = new List<CardController>(playerField.GetComponentsInChildren<CardController>());
-        selectableCards = selectableCards.Where(card => card.model.interference && card.cardInsID != targetID　&& card.model.canITF).ToList();
+        selectableCards = selectableCards.Where(card => card.model.interference && card.cardInsID != targetID && card.model.canITF).ToList();
+        CardController attackCard = FindCardByInstanceID(attackCardID);
+        CardController targetCard = FindCardByInstanceID(targetID);
 
         int resultID = INTERFERENCE_NONE;
+
+        attackCard.view.SetSelectedPanel(true);
+        targetCard.view.SetSelectedPanel(true);
 
         if (selectableCards.Count > 0)
         {
@@ -585,6 +590,9 @@ public partial class GameManager : MonoBehaviourPun
             // 選択可能カードがない場合は妨害なしを示す値を送る
             resultID = INTERFERENCE_NONE;
         }
+
+        attackCard.view.SetSelectedPanel(false);
+        targetCard.view.SetSelectedPanel(false);
 
         // 結果を全員に通知する
         photonView.RPC("SelectInterferenceResultRPC", RpcTarget.All, resultID);

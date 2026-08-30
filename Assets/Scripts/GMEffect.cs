@@ -185,6 +185,8 @@ public partial class GameManager
         }
         NC.canSelect = false;
         NoCard.SetActive(false);
+        // 選ばれたカードのうちCardInstantIDが0のカードは無効として除外する（NoCardなど）
+        SelectionResults = SelectionResults.Where(card => card.cardInsID != 0).ToList();
         yield break;
     }
 
@@ -235,6 +237,10 @@ public partial class GameManager
         if (card == null)
             return;
 
+        if (card.cardInsID == 0)
+        {
+            return;
+        }
         // cardInsID を全クライアントで一致させているのでそれを渡す
         photonView.RPC("RPC_ApplyDamageToCard", RpcTarget.All, card.cardInsID, damage);
     }
@@ -258,7 +264,7 @@ public partial class GameManager
     {
         if (card == null)
             return;
-
+        
         card.GrantDamage(damage);
         card.DamageDestroy(null);
     }
