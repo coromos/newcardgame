@@ -602,7 +602,10 @@ public partial class GameManager : MonoBehaviourPun
         int resultID = INTERFERENCE_NONE;
 
         attackCard.view.SetSelectedPanel(true);
-        targetCard.view.SetSelectedPanel(true);
+        if (targetCard != null)
+        {
+            targetCard.view.SetSelectedPanel(true);
+        }
 
         if (selectableCards.Count > 0)
         {
@@ -622,7 +625,10 @@ public partial class GameManager : MonoBehaviourPun
         }
 
         attackCard.view.SetSelectedPanel(false);
-        targetCard.view.SetSelectedPanel(false);
+        if (targetCard != null)
+        {
+            targetCard.view.SetSelectedPanel(false);
+        }
 
         // 結果を全員に通知する
         photonView.RPC("SelectInterferenceResultRPC", RpcTarget.All, resultID);
@@ -922,6 +928,10 @@ public partial class GameManager : MonoBehaviourPun
     // インスタンスIDからCardControllerを検索
     public CardController FindCardByInstanceID(int instanceId)
     {
+        if (instanceId == 0)
+        {
+            return null;
+        }
         CardController[] allCards = FindObjectsByType<CardController>(FindObjectsSortMode.None);
         for(int i = 0; i < allCards.Length; i++)
         {
